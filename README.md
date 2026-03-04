@@ -84,11 +84,13 @@ Initially, the repository contains a few packages.
 - [`packages/main`](packages/main) - Implementation of Electron's [**main script**](https://www.electronjs.org/docs/tutorial/quick-start#create-the-main-script-file).
 - [`packages/preload`](packages/preload) - Implementation of Electron's [**preload scripts**](https://www.electronjs.org/docs/latest/tutorial/tutorial-preload).
 - [`packages/renderer`](packages/renderer) - Default React + Tailwind renderer package.
+- [`packages/ui`](packages/ui) - Shared shadcn/ui component package for scalable UI reuse across apps.
 
 ### Renderer package included
 
 The repository includes a default renderer package at [`packages/renderer`](packages/renderer)
 based on Vite + React + Tailwind CSS.
+Shared shadcn/ui primitives live in [`packages/ui`](packages/ui).
 
 There is only one requirement: the template expects to import renderer by `@app/renderer` name.
 
@@ -327,6 +329,15 @@ pnpm lint:typecheck
 ```
 
 Runs Oxlint with type-aware rules and TypeScript diagnostics (`--type-check`).
+
+---
+
+```sh
+pnpm shadcn:add button
+```
+
+Adds shadcn/ui components through the renderer workspace into the shared `packages/ui` package.
+The shadcn baseline is already initialized in this template.
 
 ---
 

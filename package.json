@@ -19,6 +19,7 @@
     "lint:fix": "oxlint packages/renderer --config oxlint.config.ts --fix",
     "lint:type-aware": "oxlint packages/renderer --config oxlint.config.ts --type-aware",
     "lint:typecheck": "oxlint packages/renderer --config oxlint.config.ts --type-aware --type-check",
+    "shadcn:add": "pnpm dlx shadcn@latest add --cwd packages/renderer",
     "test": "npx playwright test ./tests/e2e.spec.ts",
     "start": "node packages/dev-mode.js",
     "typecheck": "pnpm -r --if-present run typecheck",
