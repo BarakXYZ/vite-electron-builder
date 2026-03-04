@@ -306,6 +306,30 @@ Checks formatting with `oxfmt` without changing files.
 ---
 
 ```sh
+pnpm lint
+```
+
+Runs Oxlint in fast syntax mode.
+
+---
+
+```sh
+pnpm lint:type-aware
+```
+
+Runs Oxlint with TypeScript-aware rules via `oxlint-tsgolint`.
+
+---
+
+```sh
+pnpm lint:typecheck
+```
+
+Runs Oxlint with type-aware rules and TypeScript diagnostics (`--type-check`).
+
+---
+
+```sh
 pnpm typecheck
 ```
 

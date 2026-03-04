@@ -40,6 +40,7 @@ jobs:
         with:
           renderer-template: ${{inputs.renderer-template}}
       - run: pnpm run fmt:check --if-present
+      - run: pnpm run lint --if-present
       - run: pnpm run typecheck --if-present
 
   compile:
