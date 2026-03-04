@@ -1,18 +1,16 @@
-
 > [!Important]
 > This project is maintained by developer from Ukraine 🇺🇦
-> 
+>
 > I do my best, but due to Russia's ongoing full-scale invasion of Ukraine, I barely have the energy to support open source projects.
 >
 > If my work has been useful to you, please consider [supporting Ukraine](https://stand-with-ukraine.pp.ua/) or [me personally](https://send.monobank.ua/6SmojkkR9i). Even your **$1** has an impact!
 
 ![IMG_0875](https://github.com/user-attachments/assets/590de304-e2c4-4935-9814-c18ade52fd8e)
 
-
 # Vite Electron Builder Boilerplate
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/cawa-93/vite-electron-builder?label=last%20update)
-![GitHub package.json dev/peer/optional dependency version](https://img.shields.io/github/package-json/dependency-version/cawa-93/vite-electron-builder/dev/electron) 
+![GitHub package.json dev/peer/optional dependency version](https://img.shields.io/github/package-json/dependency-version/cawa-93/vite-electron-builder/dev/electron)
 ![GitHub package.json dev/peer/optional dependency version](https://img.shields.io/github/package-json/dependency-version/cawa-93/vite-electron-builder/dev/electron-builder)
 ![GitHub package.json dev/peer/optional dependency version](https://img.shields.io/github/package-json/dependency-version/cawa-93/vite-electron-builder/dev/vite?filename=packages%2Fmain%2Fpackage.json)
 ![GitHub package.json dev/peer/optional dependency version](https://img.shields.io/github/package-json/dependency-version/cawa-93/vite-electron-builder/dev/playwright)
@@ -28,7 +26,7 @@ Follow these steps to get started with the template:
 2. Go to project folder and run `pnpm install`.
 3. Start application in development mode by `pnpm start`.
 4. Compile executable by `pnpm compile`.
- 
+
 That's all you need. 😉
 
 > [!TIP]
@@ -41,6 +39,7 @@ That's all you need. 😉
 ## Features
 
 ### Lightweight
+
 When designing this template, I tried to keep it minimal, using the platform's native features to the maximum and minimizing the number of third-party dependencies.
 
 ### Electron
@@ -116,7 +115,6 @@ this.
 > This template is configured to use GitHub Releases to distribute updates, but you can configure whatever you need.
 > Find more in [electron-builder docs](https://www.electron.build/configuration/publish).
 
-
 ### Working with third-party dependencies
 
 Because the `renderer` works and builds like a _regular web application_, you can only use dependencies that support the
@@ -145,16 +143,16 @@ so you don't need to worry about it.
 
 ```ts
 // preload/src/index.ts
-import {readFile} from 'node:fs/promises';
+import { readFile } from "node:fs/promises";
 
 // Encapsulate types if you use typescript
 interface UserData {
-  prop: string
+  prop: string;
 }
 
 // Will call `electron.contextBridge.exposeInMainWorld('getUserData', getUserData)`
 export function getUserData(): Promise<UserData> {
-  return readFile('/path/to/file/in/user/filesystem.json', {encoding: 'utf8'}).then(JSON.parse);
+  return readFile("/path/to/file/in/user/filesystem.json", { encoding: "utf8" }).then(JSON.parse);
 }
 ```
 
@@ -162,11 +160,11 @@ Now you can import and call the method in renderer
 
 ```ts
 // renderer/src/anywere/component.ts
-import {getUserData} from '@app/preload'
+import { getUserData } from "@app/preload";
 
 // Method will came from exposed context
 // const userData = globalThis['getUserData']
-const userData = await getUserData()
+const userData = await getUserData();
 ```
 
 > [!TIP]
@@ -251,68 +249,97 @@ will not.
 ```sh
 pnpm start
 ```
+
 Start application in development more with hot-reload.
 
 ---
+
 ```sh
 pnpm build
 ```
+
 Runs the `build` command in all workspaces if present.
 
 ---
+
 ```sh
 pnpm compile
 ```
+
 First runs the `build` script,
 then compiles the project into executable using `electron-builder` with the specified configuration.
 
 ---
+
 ```sh
 pnpm compile -- --dir -c.asar=false
 ```
+
 Same as `pnpm compile` but pass to `electron-builder` additional parameters to disable asar archive and installer
 creating.
 Useful for debugging compiled application.
 
 ---
+
 ```sh
 pnpm test
 ```
+
 Executes end-to-end tests on **compiled app** using Playwright.
 
 ---
+
+```sh
+pnpm fmt
+```
+
+Formats supported files with `oxfmt`.
+
+---
+
+```sh
+pnpm fmt:check
+```
+
+Checks formatting with `oxfmt` without changing files.
+
+---
+
 ```sh
 pnpm typecheck
 ```
+
 Runs the `typecheck` command in all workspaces if present.
 
 ---
+
 ```sh
 pnpm create-renderer
 ```
+
 Initializes a new Vite project named `renderer`. Basically same as `pnpm create vite`.
 
 ---
+
 ```sh
 pnpm integrate-renderer
 ```
+
 Starts the integration process of the renderer using the Vite Electron builder.
 
 ---
+
 ```sh
 pnpm run init
 ```
+
 Set up a missing renderer package by creating a new renderer, integrating it, and installing the necessary packages.
 
 ## Contribution
 
 See [Contributing Guide](CONTRIBUTING.md).
 
-
 [vite]: https://github.com/vitejs/vite/
-
 [electron]: https://github.com/electron/electron
-
 [electron-builder]: https://github.com/electron-userland/electron-builder
-
 [playwright]: https://playwright.dev

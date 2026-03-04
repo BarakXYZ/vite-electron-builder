@@ -1,22 +1,20 @@
 {
   "name": "root",
-  "description": "Secure boilerplate for Electron app based on Vite",
   "version": "3.1.0",
   "private": true,
-  "type": "module",
-  "packageManager": "pnpm@10.19.0",
+  "description": "Secure boilerplate for Electron app based on Vite",
   "author": {
-    "email": "kozackunisoft@gmail.com",
     "name": "Alex Kozack",
+    "email": "kozackunisoft@gmail.com",
     "url": "https://kozack.me"
   },
+  "type": "module",
   "main": "packages/entry-point.mjs",
-  "engines": {
-    "node": ">=24.0.0"
-  },
   "scripts": {
     "build": "pnpm -r --if-present run build",
     "compile": "pnpm run build && electron-builder build --config electron-builder.mjs",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
     "test": "npx playwright test ./tests/e2e.spec.ts",
     "start": "node packages/dev-mode.js",
     "typecheck": "pnpm -r --if-present run typecheck",
@@ -24,21 +22,26 @@
     "integrate-renderer": "pnpm --filter @app/integrate-renderer start",
     "init": "node -e \"const fs=require('node:fs');process.exit(fs.existsSync('packages/renderer')?0:1)\" || (pnpm run create-renderer && pnpm run integrate-renderer) && pnpm install"
   },
-  "devDependencies": {
-    "@npmcli/map-workspaces": "5.0.3",
-    "@playwright/test": "1.58.2",
-    "@typescript/native-preview": "7.0.0-dev.20260304.1",
-    "@types/node": "25.3.3",
-    "create-vite": "8.3.0",
-    "electron": "40.6.1",
-    "electron-builder": "26.8.1",
-    "glob": "13.0.6",
-    "playwright": "^1.58.2",
-    "vite": "7.3.1"
-  },
   "dependencies": {
     "@app/main": "workspace:*",
     "@app/preload": "workspace:*",
     "@app/renderer": "workspace:*"
-  }
+  },
+  "devDependencies": {
+    "@npmcli/map-workspaces": "5.0.3",
+    "@playwright/test": "1.58.2",
+    "@types/node": "25.3.3",
+    "@typescript/native-preview": "7.0.0-dev.20260304.1",
+    "create-vite": "8.3.0",
+    "electron": "40.6.1",
+    "electron-builder": "26.8.1",
+    "glob": "13.0.6",
+    "oxfmt": "^0.36.0",
+    "playwright": "^1.58.2",
+    "vite": "7.3.1"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "packageManager": "pnpm@10.19.0"
 }

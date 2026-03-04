@@ -12,7 +12,7 @@
 interface ImportMetaEnv {
   readonly DEV: boolean;
   readonly PROD: boolean;
-  readonly MODE: 'development' | 'production' | string;
+  readonly MODE: "development" | "production" | string;
 
   /**
    * URL where `renderer` web page is running.

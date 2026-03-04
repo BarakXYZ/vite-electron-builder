@@ -12,7 +12,7 @@ on:
         description: Define what vite template should be used to create renderer in case if renderer package doesn't exist
         required: false
         type: string
-        default: ''
+        default: ""
 
 concurrency:
   group: ${{github.workflow}}-${{ github.ref }}-${{inputs.distribution-channel}}

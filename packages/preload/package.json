@@ -3,10 +3,6 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "scripts": {
-    "build": "vite build",
-    "typecheck": "tsgo --noEmit"
-  },
   "exports": {
     ".": {
       "types": "./src/index.ts",
@@ -16,6 +12,10 @@
       "types": "./src/exposed.d.ts",
       "default": "./dist/exposed.mjs"
     }
+  },
+  "scripts": {
+    "build": "vite build",
+    "typecheck": "tsgo --noEmit"
   },
   "devDependencies": {
     "@app/electron-versions": "workspace:*",
