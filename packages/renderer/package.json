@@ -12,7 +12,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsgo -b && vite build --base ./",
-    "lint": "oxlint .",
+    "lint": "oxlint . --config ../../oxlint.config.ts",
     "preview": "vite preview"
   },
   "dependencies": {

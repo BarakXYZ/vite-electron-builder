@@ -17,5 +17,6 @@ First and foremost, thank you! We appreciate that you want to contribute to vite
 - This repo uses `oxfmt` for formatting and checks formatting in CI.
   Please run `pnpm fmt` before opening a PR.
 - This repo uses `oxlint` for linting and checks linting in CI.
+  The shared ruleset is provided by `@nkzw/oxlint-config`.
   Please run `pnpm lint` before opening a PR.
 - This repo has configured end-to-end tests. If you can't run tests locally - make a PR in draft.

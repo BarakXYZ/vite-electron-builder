@@ -310,6 +310,7 @@ pnpm lint
 ```
 
 Runs Oxlint in fast syntax mode.
+Configuration is provided by `@nkzw/oxlint-config`.
 
 ---
 

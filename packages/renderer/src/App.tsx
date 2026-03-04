@@ -9,14 +9,14 @@ function App() {
     <main className="grid min-h-screen place-items-center bg-slate-950 px-6 py-10 text-slate-100">
       <section className="w-full max-w-3xl rounded-2xl border border-slate-700/70 bg-slate-900/80 p-8 shadow-2xl shadow-slate-950/60 backdrop-blur">
         <div className="mb-8 flex items-center justify-center gap-6">
-          <a href="https://vite.dev" target="_blank" rel="noreferrer">
-            <img src={viteLogo} className="h-14 w-14 transition hover:scale-110" alt="Vite logo" />
+          <a href="https://vite.dev" rel="noreferrer" target="_blank">
+            <img alt="Vite logo" className="h-14 w-14 transition hover:scale-110" src={viteLogo} />
           </a>
-          <a href="https://react.dev" target="_blank" rel="noreferrer">
+          <a href="https://react.dev" rel="noreferrer" target="_blank">
             <img
-              src={reactLogo}
-              className="h-14 w-14 transition hover:scale-110"
               alt="React logo"
+              className="h-14 w-14 transition hover:scale-110"
+              src={reactLogo}
             />
           </a>
         </div>
