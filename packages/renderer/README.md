@@ -19,3 +19,4 @@ pnpm --filter @app/renderer build
 ```
 
 Tailwind is configured through [`vite.config.ts`](./vite.config.ts) and [`src/index.css`](./src/index.css).
+The default setup uses semantic theme tokens and follows the OS dark/light preference automatically.

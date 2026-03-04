@@ -6,8 +6,8 @@ function App() {
   const [count, setCount] = useState(0);
 
   return (
-    <main className="grid min-h-screen place-items-center bg-slate-950 px-6 py-10 text-slate-100">
-      <section className="w-full max-w-3xl rounded-2xl border border-slate-700/70 bg-slate-900/80 p-8 shadow-2xl shadow-slate-950/60 backdrop-blur">
+    <main className="grid min-h-screen place-items-center bg-app-canvas px-6 py-10 text-app-text-primary">
+      <section className="w-full max-w-3xl rounded-2xl border border-app-border bg-app-surface p-8 shadow-app-elevated backdrop-blur">
         <div className="mb-8 flex items-center justify-center gap-6">
           <a href="https://vite.dev" rel="noreferrer" target="_blank">
             <img alt="Vite logo" className="h-14 w-14 transition hover:scale-110" src={viteLogo} />
@@ -24,20 +24,22 @@ function App() {
           <h1 className="text-balance text-4xl font-semibold tracking-tight">
             Electron + Vite + React + Tailwind
           </h1>
-          <p className="text-slate-300">
+          <p className="text-app-text-secondary">
             Production starter template with secure Electron defaults.
           </p>
           <div className="flex justify-center">
             <button
-              className="rounded-lg bg-cyan-500 px-4 py-2 font-medium text-slate-950 transition hover:bg-cyan-400"
+              className="rounded-lg bg-app-brand px-4 py-2 font-medium text-app-brand-contrast transition hover:bg-app-brand-hover"
               onClick={() => setCount((value) => value + 1)}
             >
               count is {count}
             </button>
           </div>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-app-text-muted">
             Edit{" "}
-            <code className="rounded bg-slate-800 px-1 py-0.5">packages/renderer/src/App.tsx</code>{" "}
+            <code className="rounded bg-app-code-bg px-1 py-0.5">
+              packages/renderer/src/App.tsx
+            </code>{" "}
             to customize the template.
           </p>
         </div>
