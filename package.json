@@ -27,6 +27,7 @@
   "devDependencies": {
     "@npmcli/map-workspaces": "5.0.3",
     "@playwright/test": "1.58.2",
+    "@typescript/native-preview": "7.0.0-dev.20260304.1",
     "@types/node": "25.3.3",
     "create-vite": "8.3.0",
     "electron": "40.6.1",
