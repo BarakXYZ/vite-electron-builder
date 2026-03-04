@@ -1,5 +1,7 @@
 {
   "name": "@app/electron-versions",
+  "version": "0.0.0",
+  "private": true,
   "type": "module",
   "files": [],
   "main": "./index.js",

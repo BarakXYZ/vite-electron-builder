@@ -10,6 +10,10 @@
  * @see https://vitejs.dev/guide/env-and-mode.html#env-files Vite Env Variables Doc.
  */
 interface ImportMetaEnv {
+  readonly DEV: boolean;
+  readonly PROD: boolean;
+  readonly MODE: 'development' | 'production' | string;
+
   /**
    * URL where `renderer` web page is running.
    * This variable is initialized in scripts/watch.ts
@@ -18,6 +22,9 @@ interface ImportMetaEnv {
 
   /** Current app version */
   readonly VITE_APP_VERSION: string;
+
+  /** App release channel used by auto-updater (e.g. alpha, beta, latest). */
+  readonly VITE_DISTRIBUTION_CHANNEL: string | undefined;
 }
 
 interface ImportMeta {
