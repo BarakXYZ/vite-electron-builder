@@ -25,9 +25,9 @@ and best practices.
 Follow these steps to get started with the template:
 
 1. Click the **[Use this template](https://github.com/cawa-93/vite-electron-builder/generate)** button (you must be logged in) or just clone this repo.
-2. Go to project folder and run `npm run init`.
-3. Start application in development mode by `npm start`.
-4. Compile executable by `npm run compile`.
+2. Go to project folder and run `pnpm install`.
+3. Start application in development mode by `pnpm start`.
+4. Compile executable by `pnpm compile`.
  
 That's all you need. 😉
 
@@ -72,29 +72,29 @@ All internal names are prefixed by `@app/*`.
 There are no technical reasons for this.
 It's just for you to make it easier to understand the architecture.
 
-Initially, the repository contains only a few packages.4
+Initially, the repository contains a few packages.
 
 ### Packages with building tools:
 
 - [`packages/integrate-renderer`](packages/integrate-renderer) - A helper package that is not included in the runtime.
-  It is used in `npm run init` to configure a new interface package.
+  It is used in `pnpm run init` to configure a new interface package.
 - [`packages/electron-versions`](packages/electron-versions) - A set of helper functions to get the versions of internal components bundled within Electron.
 
 ### Packages with app logic:
 
 - [`packages/main`](packages/main) - Implementation of Electron's [**main script**](https://www.electronjs.org/docs/tutorial/quick-start#create-the-main-script-file).
 - [`packages/preload`](packages/preload) - Implementation of Electron's [**preload scripts**](https://www.electronjs.org/docs/latest/tutorial/tutorial-preload).
+- [`packages/renderer`](packages/renderer) - Default React + Tailwind renderer package.
 
-### Renderer is not included
+### Renderer package included
 
-As you may have noticed, the repository does **not** contain a package that implements the application interface.
-The reason is that since the entire application is a mono-repository,
-you can use any web application based on any framework or bundler as a package for the interface.
+The repository includes a default renderer package at [`packages/renderer`](packages/renderer)
+based on Vite + React + Tailwind CSS.
 
 There is only one requirement: the template expects to import renderer by `@app/renderer` name.
 
 > [!TIP]
-> You can create new renderer package in interactive mode by `npm run init`.
+> You can replace the default renderer in interactive mode by removing `packages/renderer` and running `pnpm run init`.
 
 > [!NOTE]
 > If you are using a bundler other than vite,
@@ -108,9 +108,9 @@ When an application is ready to distribute, you need to compile it into executab
 We are using [electron-builder] for
 this.
 
-- You can compile application locally by `npm run compile`.
+- You can compile application locally by `pnpm compile`.
   In this case, you will get executable that you cat share, but it will not support auto-updates out-of-box.
-- To have auto-updater, you should compile an application and publish it to one or more supported sources for distribution. In this case, all application instances will download and apply all new updates. This is done by GitHub action in [release.yml](.github/workflows/release.yml).
+- To have auto-updater, you should compile an application and publish it to one or more supported sources for distribution. In this case, all application instances will download and apply all new updates. This is done by GitHub actions in [`ci.yml`](.github/workflows/ci.yml) and [`deploy.yml`](.github/workflows/deploy.yml).
 
 > [!TIP]
 > This template is configured to use GitHub Releases to distribute updates, but you can configure whatever you need.
@@ -218,7 +218,7 @@ that need to be loaded.
 By default, there are two modes:
 
 - `production` is used by default
-- `development` is used by `npm start` script
+- `development` is used by `pnpm start` script
 
 When running the build script, the environment variables are loaded from the following files in your project root:
 
@@ -246,63 +246,63 @@ will not.
 > [!TIP]
 > You can change that prefix or add another. See [`envPrefix`](https://vitejs.dev/config/shared-options.html#envprefix).
 
-### NPM Scripts
+### Scripts
 
 ```sh
-npm start
+pnpm start
 ```
 Start application in development more with hot-reload.
 
 ---
 ```sh
-npm run build
+pnpm build
 ```
 Runs the `build` command in all workspaces if present.
 
 ---
 ```sh
-npm run compile
+pnpm compile
 ```
 First runs the `build` script,
 then compiles the project into executable using `electron-builder` with the specified configuration.
 
 ---
 ```sh
-npm run compile -- --dir -c.asar=false
+pnpm compile -- --dir -c.asar=false
 ```
-Same as `npm run compile` but pass to `electron-builder` additional parameters to disable asar archive and installer
+Same as `pnpm compile` but pass to `electron-builder` additional parameters to disable asar archive and installer
 creating.
 Useful for debugging compiled application.
 
 ---
 ```sh
-npm run test
+pnpm test
 ```
 Executes end-to-end tests on **compiled app** using Playwright.
 
 ---
 ```sh
-npm run typecheck
+pnpm typecheck
 ```
 Runs the `typecheck` command in all workspaces if present.
 
 ---
 ```sh
-npm run create-renderer
+pnpm create-renderer
 ```
-Initializes a new Vite project named `renderer`. Basically same as `npm create vite`.
+Initializes a new Vite project named `renderer`. Basically same as `pnpm create vite`.
 
 ---
 ```sh
-npm run integrate-renderer
+pnpm integrate-renderer
 ```
 Starts the integration process of the renderer using the Vite Electron builder.
 
 ---
 ```sh
-npm run init
+pnpm run init
 ```
-Set up the initial environment by creating a new renderer, integrating it, and installing the necessary packages.
+Set up a missing renderer package by creating a new renderer, integrating it, and installing the necessary packages.
 
 ## Contribution
 
