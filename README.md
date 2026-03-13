@@ -311,8 +311,8 @@ Checks formatting with `oxfmt` without changing files.
 pnpm lint
 ```
 
-Runs Oxlint in fast syntax mode.
-Configuration is provided by `@nkzw/oxlint-config`.
+Runs Oxlint in fast syntax mode for both `packages/renderer` and `packages/ui`.
+Renderer uses `@nkzw/oxlint-config`; shared UI uses `oxlint.ui.config.ts` tuned for shadcn-generated code.
 
 ---
 
@@ -320,7 +320,7 @@ Configuration is provided by `@nkzw/oxlint-config`.
 pnpm lint:type-aware
 ```
 
-Runs Oxlint with TypeScript-aware rules via `oxlint-tsgolint`.
+Runs Oxlint with TypeScript-aware rules via `oxlint-tsgolint` for renderer and shared UI.
 
 ---
 
@@ -328,16 +328,23 @@ Runs Oxlint with TypeScript-aware rules via `oxlint-tsgolint`.
 pnpm lint:typecheck
 ```
 
-Runs Oxlint with type-aware rules and TypeScript diagnostics (`--type-check`).
+Runs Oxlint with type-aware rules and TypeScript diagnostics (`--type-check`) for renderer and shared UI.
 
 ---
 
 ```sh
-pnpm shadcn:add button
+pnpm shadcn:add:app sidebar-01
 ```
 
-Adds shadcn/ui components through the renderer workspace into the shared `packages/ui` package.
-The shadcn baseline is already initialized in this template.
+Adds app shells/blocks via the renderer workspace config.
+
+---
+
+```sh
+pnpm shadcn:add:ui button
+```
+
+Adds shared shadcn/ui primitives directly into `packages/ui`.
 
 ---
 

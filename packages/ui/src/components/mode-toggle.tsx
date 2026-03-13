@@ -1,5 +1,5 @@
 import { MoonIcon, SunIcon } from "lucide-react";
-import { useTheme } from "next-themes";
+import { useTheme } from "@app/ui/components/theme-provider";
 
 import { Button } from "@app/ui/components/button";
 import {
