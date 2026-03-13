@@ -102,22 +102,16 @@ test("Main window state", async ({ electronApp, page }) => {
 
 test.describe("Main window web content", async () => {
   test("The main window has an interactive button", async ({ page }) => {
-    const element = page.getByRole("button");
+    const element = page.getByRole("button", { name: "count is 0" });
     await expect(element).toBeVisible();
     await expect(element).toHaveText("count is 0");
     await element.click();
     await expect(element).toHaveText("count is 1");
   });
 
-  test("The main window has a vite logo", async ({ page }) => {
-    const element = page.getByAltText("Vite logo");
-    await expect(element).toBeVisible();
-    await expect(element).toHaveRole("img");
-    const imgState = await element.evaluate((img: HTMLImageElement) => img.complete);
-    const imgNaturalWidth = await element.evaluate((img: HTMLImageElement) => img.naturalWidth);
-
-    expect(imgState).toEqual(true);
-    expect(imgNaturalWidth).toBeGreaterThan(0);
+  test("The main window renders the app shell", async ({ page }) => {
+    await expect(page.getByRole("heading", { name: "Electron Workspace" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "System" })).toBeVisible();
   });
 });
 
