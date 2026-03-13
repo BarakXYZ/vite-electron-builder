@@ -7,6 +7,7 @@ import { hardwareAccelerationMode } from "./modules/HardwareAccelerationModule.j
 import { autoUpdater } from "./modules/AutoUpdater.js";
 import { allowInternalOrigins } from "./modules/BlockNotAllowdOrigins.js";
 import { allowExternalUrls } from "./modules/ExternalUrls.js";
+import { denyPermissionRequests } from "./modules/PermissionRequests.js";
 
 export async function initApp(initConfig: AppInitConfig) {
   const moduleRunner = createModuleRunner()
@@ -25,6 +26,7 @@ export async function initApp(initConfig: AppInitConfig) {
         new Set(initConfig.renderer instanceof URL ? [initConfig.renderer.origin] : []),
       ),
     )
+    .init(denyPermissionRequests())
     .init(
       allowExternalUrls(
         new Set(
