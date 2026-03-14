@@ -174,6 +174,90 @@ That gives the repo:
 
 Configuration lives in [`turbo.json`](./turbo.json).
 
+### Remote Cache Onboarding
+
+This repository is already wired to use Turbo Remote Caching in GitHub Actions when the required repository configuration is present.
+
+#### GitHub Actions configuration
+
+Set these in the GitHub repository before expecting CI cache hits:
+
+1. Repository variable: `TURBO_TEAM`
+2. Repository secret: `TURBO_TOKEN`
+
+The CI workflows read them here:
+
+- [`.github/workflows/ci.yml`](./.github/workflows/ci.yml)
+- [`.github/workflows/compile-and-test.yml`](./.github/workflows/compile-and-test.yml)
+
+If they are not configured, CI still works, but Turbo falls back to local-only caching for that run.
+
+#### Local developer setup
+
+Authenticate the Turbo CLI with your remote cache provider:
+
+```sh
+pnpm dlx turbo login
+```
+
+If your cache provider requires single sign-on, use:
+
+```sh
+pnpm dlx turbo login --sso-team <team-slug>
+```
+
+Then link this repository to the remote cache:
+
+```sh
+pnpm dlx turbo link
+```
+
+If you use a self-hosted remote cache instead of the managed Vercel cache, use:
+
+```sh
+pnpm dlx turbo login --manual
+```
+
+#### Verifying remote cache behavior
+
+Run a cacheable task once:
+
+```sh
+pnpm build
+```
+
+Then clear the local Turbo cache:
+
+```sh
+rm -rf ./.turbo/cache
+```
+
+Run the same task again:
+
+```sh
+pnpm build
+```
+
+If remote caching is configured correctly, Turbo should replay cached logs and artifacts instead of rebuilding locally.
+
+#### Artifact signing
+
+Turbo also supports signing remote cache artifacts with `TURBO_REMOTE_CACHE_SIGNATURE_KEY` and `remoteCache.signature`.
+
+This repository does not enable signed remote-cache artifacts by default yet, because enabling signatures should be done only when all local and CI environments are ready to provide the signing key consistently.
+
+#### Cache-safety notes
+
+Remote caching is only safe when task inputs are declared correctly.
+
+This repository already accounts for the main non-default task inputs used by the desktop app:
+
+- `VITE_DISTRIBUTION_CHANNEL` is hashed for `build` and `compile`
+- `APP_E2E_WINDOW_MODE` is declared for the E2E tasks
+- `pnpm-lock.yaml` is included in the global hash via `globalDependencies`
+
+Those settings live in [`turbo.json`](./turbo.json).
+
 ## Desktop Architecture
 
 Inside the desktop process packages, code is organized as:
