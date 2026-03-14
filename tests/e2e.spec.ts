@@ -9,6 +9,7 @@ type TestFixtures = {
 };
 
 type MainWindowState = {
+  backgroundColor: string;
   isCrashed: boolean;
   isDevToolsOpened: boolean;
   isVisible: boolean;
@@ -27,6 +28,7 @@ async function getMainWindowState(
 
   return windowHandle.evaluate((mainWindow): Promise<MainWindowState> => {
     const getState = () => ({
+      backgroundColor: mainWindow.getBackgroundColor(),
       isCrashed: mainWindow.webContents.isCrashed(),
       isDevToolsOpened: mainWindow.webContents.isDevToolsOpened(),
       isVisible: mainWindow.isVisible(),
@@ -42,6 +44,17 @@ async function getMainWindowState(
     });
   });
 }
+
+const RESOLVED_THEME_BACKGROUNDS = {
+  dark: {
+    document: "rgb(10, 10, 10)",
+    nativeWindow: "#0A0A0A",
+  },
+  light: {
+    document: "rgb(255, 255, 255)",
+    nativeWindow: "#FFFFFF",
+  },
+} as const;
 
 const test = base.extend<TestFixtures, WorkerFixtures>({
   electronApp: [
@@ -129,6 +142,23 @@ test.describe("Main window web content", () => {
     }
 
     expect(themeState.state.resolvedTheme).toEqual(themeSource);
+  });
+
+  test("The main window boot background follows the resolved theme", async ({
+    electronApp,
+    page,
+  }) => {
+    const windowState = await getMainWindowState(electronApp, page);
+    const themeState = await page.evaluate(async () => {
+      return {
+        documentBackgroundColor: window.getComputedStyle(document.documentElement).backgroundColor,
+        state: await window.electronAPI.theme.getState(),
+      };
+    });
+    const expectedBackgrounds = RESOLVED_THEME_BACKGROUNDS[themeState.state.resolvedTheme];
+
+    expect(themeState.documentBackgroundColor).toEqual(expectedBackgrounds.document);
+    expect(windowState.backgroundColor).toEqual(expectedBackgrounds.nativeWindow);
   });
 
   test("The main window has an interactive button", async ({ page }) => {

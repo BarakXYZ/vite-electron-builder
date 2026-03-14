@@ -2,8 +2,10 @@ import type { AppInitConfig } from "../../../app/AppInitConfig.js";
 import type { AppModule } from "../../../app/AppModule.js";
 import type { ModuleContext } from "../../../app/ModuleContext.js";
 import { isRendererUrlTarget } from "../../../app/rendererTarget.js";
-import { BrowserWindow } from "electron";
+import { BrowserWindow, nativeTheme } from "electron";
 import { DevToolsWindowManager } from "../devtools/DevToolsWindowManager.js";
+import { getNativeBackgroundColor } from "../../theme/ThemePresentation.js";
+import type { ResolvedTheme } from "../../theme/ThemeState.js";
 
 class MainWindowManager implements AppModule {
   readonly #preload: { path: string };
@@ -36,6 +38,7 @@ class MainWindowManager implements AppModule {
 
   async createWindow(): Promise<BrowserWindow> {
     const browserWindow = new BrowserWindow({
+      backgroundColor: getNativeBackgroundColor(getResolvedTheme()),
       show: false, // Use the 'ready-to-show' event to show the instantiated BrowserWindow.
       webPreferences: {
         contextIsolation: true,
@@ -52,7 +55,15 @@ class MainWindowManager implements AppModule {
       await browserWindow.loadFile(this.#renderer.path);
     }
 
+    const syncBackgroundColor = () => {
+      browserWindow.setBackgroundColor(getNativeBackgroundColor(getResolvedTheme()));
+    };
+
+    nativeTheme.on("updated", syncBackgroundColor);
+
     browserWindow.on("closed", () => {
+      nativeTheme.removeListener("updated", syncBackgroundColor);
+
       if (this.#mainWindow === browserWindow) {
         this.#mainWindow = null;
       }
@@ -87,6 +98,10 @@ class MainWindowManager implements AppModule {
 
     return window;
   }
+}
+
+function getResolvedTheme(): ResolvedTheme {
+  return nativeTheme.shouldUseDarkColors ? "dark" : "light";
 }
 
 export function createMainWindowModule(...args: ConstructorParameters<typeof MainWindowManager>) {

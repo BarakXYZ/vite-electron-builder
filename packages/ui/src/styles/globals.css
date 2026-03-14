@@ -109,12 +109,17 @@
     height: 100%;
   }
 
+  html {
+    background-color: var(--background);
+  }
+
   body {
     margin: 0;
     font-family: Inter, "Segoe UI", sans-serif;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-color: var(--background);
     @apply bg-background text-foreground;
   }
 }
