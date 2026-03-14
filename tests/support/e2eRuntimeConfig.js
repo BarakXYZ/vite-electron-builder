@@ -1,16 +1,16 @@
 // @ts-check
 
-import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import process from "node:process";
+import { pathToFileURL } from "node:url";
 
-/** @type {{ windowMode: "hidden" }} */
+/** @type {E2ERuntimeConfig} */
 const DEFAULT_E2E_RUNTIME_CONFIG = {
   windowMode: "hidden",
 };
 
 const E2E_WINDOW_MODES = ["hidden", "background", "interactive"];
-const E2E_RUNTIME_CONFIG_PATH = resolve(process.cwd(), "tests/e2e.runtime.config.json");
+const E2E_RUNTIME_CONFIG_PATH = resolve(process.cwd(), "tests/e2e.runtime.config.js");
 const E2E_WINDOW_MODE_SET = new Set(E2E_WINDOW_MODES);
 
 /**
@@ -23,19 +23,10 @@ function isRecord(value) {
 
 /**
  * @param {unknown} value
- * @returns {value is "hidden" | "background" | "interactive"}
+ * @returns {value is E2EWindowMode}
  */
 function isE2EWindowMode(value) {
   return typeof value === "string" && E2E_WINDOW_MODE_SET.has(value);
-}
-
-/**
- * @param {string} configPath
- * @returns {unknown}
- */
-function readRuntimeConfigFile(configPath) {
-  const fileContents = readFileSync(configPath, "utf8");
-  return JSON.parse(fileContents);
 }
 
 /**
@@ -63,20 +54,37 @@ function resolveConfiguredWindowMode({ environment, fileConfig, windowModeOverri
 }
 
 /**
+ * @param {E2ERuntimeConfig} config
+ * @returns {E2ERuntimeConfig}
+ */
+export function defineE2ERuntimeConfig(config) {
+  const windowMode =
+    isRecord(config) && isE2EWindowMode(config.windowMode)
+      ? config.windowMode
+      : DEFAULT_E2E_RUNTIME_CONFIG.windowMode;
+
+  return {
+    windowMode,
+  };
+}
+
+/**
  * @param {{
  *   environment?: NodeJS.ProcessEnv;
  *   windowModeOverride?: string | undefined;
  *   configPath?: string | undefined;
  * }} [options]
+ * @returns {Promise<E2ERuntimeConfig>}
  */
-export function loadE2ERuntimeConfig(options = {}) {
+export async function loadE2ERuntimeConfig(options = {}) {
   const {
     configPath = E2E_RUNTIME_CONFIG_PATH,
     environment = process.env,
     windowModeOverride,
   } = options;
 
-  const fileConfig = readRuntimeConfigFile(configPath);
+  const configUrl = pathToFileURL(configPath);
+  const { default: fileConfig } = await import(configUrl.href);
 
   return {
     windowMode: resolveConfiguredWindowMode({
@@ -88,3 +96,10 @@ export function loadE2ERuntimeConfig(options = {}) {
 }
 
 export { DEFAULT_E2E_RUNTIME_CONFIG, E2E_RUNTIME_CONFIG_PATH, E2E_WINDOW_MODES };
+
+/**
+ * @typedef {"hidden" | "background" | "interactive"} E2EWindowMode
+ * @typedef {{
+ *   readonly windowMode: E2EWindowMode;
+ * }} E2ERuntimeConfig
+ */

@@ -61,7 +61,7 @@ function run(command, args, environment) {
 
 const { playwrightArguments, windowModeOverride } = parseArguments(process.argv.slice(2));
 const pnpmCommand = getPnpmCommand();
-const runtimeConfig = loadE2ERuntimeConfig({
+const runtimeConfig = await loadE2ERuntimeConfig({
   environment: process.env,
   windowModeOverride,
 });

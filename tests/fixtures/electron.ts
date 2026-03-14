@@ -74,7 +74,10 @@ export const test = base.extend<TestFixtures, WorkerFixtures>({
 
   windowMode: [
     async ({}, use) => {
-      await use(loadE2ERuntimeConfig({ environment: process.env }).windowMode);
+      const runtimeConfig = await loadE2ERuntimeConfig({
+        environment: process.env,
+      });
+      await use(runtimeConfig.windowMode);
     },
     { box: true, scope: "worker", title: "resolve e2e window mode" },
   ],
