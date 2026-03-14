@@ -20,11 +20,6 @@ export default /** @type {import('electron-builder').Configuration} */ ({
   electronVersion: workspacePkg.devDependencies.electron,
   files: [
     {
-      filter: ["LICENSE*"],
-      from: relative(appRootPath, workspaceRootPath),
-      to: ".",
-    },
-    {
       filter: normalizeFilePatterns([appPkg.main, "package.json"]),
       from: ".",
       to: ".",

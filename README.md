@@ -1,15 +1,8 @@
-> [!Important]
-> This project is maintained by a developer from Ukraine 🇺🇦
->
-> If this template has been useful to you, please consider [supporting Ukraine](https://stand-with-ukraine.pp.ua/) or [supporting the original author](https://send.monobank.ua/6SmojkkR9i).
-
-![Template preview](https://github.com/user-attachments/assets/590de304-e2c4-4935-9814-c18ade52fd8e)
-
 # Electron XYZ Monorepo Template
 
 A production-ready Electron starter built for real monorepo growth.
 
-This fork keeps the secure Electron foundation of `vite-electron-builder`, but reorganizes the repo around a future-friendly `apps/*` + `packages/*` topology, adds Turborepo for task orchestration, and ships a modern desktop baseline with React, Tailwind CSS v4, shadcn/ui, TSGo, Oxlint, Oxfmt, and Playwright.
+It ships a future-friendly `apps/*` + `packages/*` topology, Turborepo task orchestration, and a modern desktop baseline with React, Tailwind CSS v4, shadcn/ui, TSGo, Oxlint, Oxfmt, and Playwright.
 
 ## What You Get
 
@@ -71,7 +64,6 @@ packages/
   desktop-preload/
   desktop-renderer/
   desktop-electron-versions/
-  desktop-integrate-renderer/
   ui/
 ```
 
@@ -89,7 +81,6 @@ packages/
 - [`packages/desktop-preload`](./packages/desktop-preload) - explicit `contextBridge` surface and browser-safe preload shim exports.
 - [`packages/desktop-renderer`](./packages/desktop-renderer) - the React renderer app.
 - [`packages/desktop-electron-versions`](./packages/desktop-electron-versions) - Electron/Chrome/Node version helpers used by desktop tooling.
-- [`packages/desktop-integrate-renderer`](./packages/desktop-integrate-renderer) - helper scripts for replacing the bundled desktop renderer.
 - [`packages/ui`](./packages/ui) - shared shadcn/ui primitives, hooks, and styles.
 
 ## Task Model
@@ -498,16 +489,6 @@ pnpm compile
 Configuration lives in [`apps/desktop/electron-builder.mjs`](./apps/desktop/electron-builder.mjs).
 
 Build resources live in [`apps/desktop/buildResources`](./apps/desktop/buildResources).
-
-## Replacing the Desktop Renderer
-
-If you want to replace the bundled desktop renderer package entirely:
-
-```sh
-pnpm run init
-```
-
-This uses the helper scripts in [`packages/desktop-integrate-renderer`](./packages/desktop-integrate-renderer).
 
 ## References
 

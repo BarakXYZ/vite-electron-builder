@@ -3,11 +3,6 @@
   "version": "3.1.0",
   "private": true,
   "description": "Desktop Electron app workspace",
-  "author": {
-    "name": "Alex Kozack",
-    "email": "kozackunisoft@gmail.com",
-    "url": "https://kozack.me"
-  },
   "type": "module",
   "main": "./scripts/entry-point.mjs",
   "scripts": {

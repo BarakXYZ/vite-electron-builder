@@ -17,8 +17,8 @@
     "fmt:check": "oxfmt --check",
     "lint": "turbo run lint lint:root",
     "lint:fix": "turbo run lint:fix lint:fix:root --continue=always",
-    "lint:fix:root": "oxlint oxlint.config.ts oxlint.desktop.config.ts oxlint.tests.config.ts oxlint.ui.config.ts --fix && oxfmt package.json turbo.json pnpm-workspace.yaml README.md CONTRIBUTING.md .github",
-    "lint:root": "oxlint oxlint.config.ts oxlint.desktop.config.ts oxlint.tests.config.ts oxlint.ui.config.ts && oxfmt --check package.json turbo.json pnpm-workspace.yaml README.md CONTRIBUTING.md .github",
+    "lint:fix:root": "oxlint oxlint.config.ts oxlint.desktop.config.ts oxlint.tests.config.ts oxlint.ui.config.ts --fix && oxfmt package.json turbo.json pnpm-workspace.yaml README.md .github",
+    "lint:root": "oxlint oxlint.config.ts oxlint.desktop.config.ts oxlint.tests.config.ts oxlint.ui.config.ts && oxfmt --check package.json turbo.json pnpm-workspace.yaml README.md .github",
     "lint:type-aware": "turbo run lint:type-aware",
     "lint:typecheck": "turbo run lint:typecheck",
     "shadcn:add": "pnpm run shadcn:add:app",
@@ -29,10 +29,7 @@
     "test:background": "turbo run test:background --filter=@app/desktop",
     "test:hidden": "turbo run test:hidden --filter=@app/desktop",
     "test:interactive": "turbo run test:interactive --filter=@app/desktop",
-    "typecheck": "turbo run typecheck",
-    "create-renderer": "pnpm --filter @app/desktop-integrate-renderer create-renderer",
-    "integrate-renderer": "pnpm --filter @app/desktop-integrate-renderer start",
-    "init": "node -e \"const fs=require('node:fs');process.exit(fs.existsSync('packages/desktop-renderer')?0:1)\" || (pnpm run create-renderer && pnpm run integrate-renderer) && pnpm install"
+    "typecheck": "turbo run typecheck"
   },
   "devDependencies": {
     "@nkzw/eslint-plugin": "^2.0.0",
@@ -40,7 +37,6 @@
     "@playwright/test": "1.58.2",
     "@types/node": "25.3.3",
     "@typescript/native-preview": "7.0.0-dev.20260304.1",
-    "create-vite": "8.3.0",
     "electron": "40.7.0",
     "electron-builder": "26.8.1",
     "eslint-plugin-no-only-tests": "^3.3.0",

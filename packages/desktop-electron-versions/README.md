@@ -11,11 +11,5 @@ pnpm add -D @app/desktop-electron-versions
 ## Usage
 
 ```js
-import {
-  getChromeMajorVersion,
-  getChromeVersion,
-  getElectronVersions,
-  getNodeMajorVersion,
-  getNodeVersion,
-} from "@app/desktop-electron-versions";
+import { getChromeMajorVersion, getChromeVersion, getElectronVersions, getNodeMajorVersion, getNodeVersion } from "@app/desktop-electron-versions";
 ```

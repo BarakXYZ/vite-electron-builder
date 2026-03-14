@@ -1,0 +1,27 @@
+name: Setup workspace
+runs:
+  using: composite
+  steps:
+    - if: ${{ runner.os == 'Linux' }}
+      shell: bash
+      run: |
+        Xvfb :99 -screen 0 1280x960x24 &
+        echo "DISPLAY=:99" >> "$GITHUB_ENV"
+
+    - uses: pnpm/action-setup@v4
+      with:
+        version: 10
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: latest
+        cache: pnpm
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        if [ -f "pnpm-lock.yaml" ]; then
+          pnpm install --frozen-lockfile
+        else
+          pnpm install
+        fi

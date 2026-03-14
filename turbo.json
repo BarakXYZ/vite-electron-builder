@@ -13,7 +13,6 @@
         "oxlint.tests.config.ts",
         "oxlint.ui.config.ts",
         "README.md",
-        "CONTRIBUTING.md",
         ".github/**"
       ],
       "outputs": []
@@ -28,7 +27,6 @@
         "oxlint.tests.config.ts",
         "oxlint.ui.config.ts",
         "README.md",
-        "CONTRIBUTING.md",
         ".github/**"
       ],
       "outputs": []

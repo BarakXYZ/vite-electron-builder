@@ -10,11 +10,6 @@ on:
         required: false
         type: string
         default: ""
-      renderer-template:
-        description: Define what vite template should be used to create renderer in case if renderer package doesn't exist
-        required: false
-        type: string
-        default: ""
       app-version:
         required: true
         type: string
@@ -51,10 +46,8 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: ./.github/actions/init-template-with-renderer
-        name: Setup boilerplate
-        with:
-          renderer-template: ${{inputs.renderer-template}}
+      - uses: ./.github/actions/setup-workspace
+        name: Setup workspace
       - run: pnpm run fmt:check --if-present
       - run: |
           command=(pnpm exec turbo run lint lint:root typecheck)
@@ -82,10 +75,8 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: ./.github/actions/init-template-with-renderer
-        name: Setup boilerplate
-        with:
-          renderer-template: ${{inputs.renderer-template}}
+      - uses: ./.github/actions/setup-workspace
+        name: Setup workspace
 
       - run: |
           node -e "const fs=require('node:fs');const path='apps/desktop/package.json';const pkg=JSON.parse(fs.readFileSync(path,'utf8'));pkg.version=process.argv[1];fs.writeFileSync(path,JSON.stringify(pkg,null,2)+'\n');" "${{inputs.app-version}}"
