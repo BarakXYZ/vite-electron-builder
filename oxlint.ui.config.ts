@@ -7,7 +7,7 @@ export default defineConfig({
     "@typescript-eslint/array-type": "off",
     "import/no-namespace": "off",
     "perfectionist/sort-jsx-props": "off",
-    "perfectionist/sort-objects": "off",
     "perfectionist/sort-object-types": "off",
+    "perfectionist/sort-objects": "off",
   },
 });

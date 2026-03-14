@@ -1,6 +1,37 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
+    "//#lint:fix:root": {
+      "cache": false,
+      "inputs": [
+        "package.json",
+        "pnpm-workspace.yaml",
+        "turbo.json",
+        "oxlint.config.ts",
+        "oxlint.desktop.config.ts",
+        "oxlint.tests.config.ts",
+        "oxlint.ui.config.ts",
+        "README.md",
+        "CONTRIBUTING.md",
+        ".github/**"
+      ],
+      "outputs": []
+    },
+    "//#lint:root": {
+      "inputs": [
+        "package.json",
+        "pnpm-workspace.yaml",
+        "turbo.json",
+        "oxlint.config.ts",
+        "oxlint.desktop.config.ts",
+        "oxlint.tests.config.ts",
+        "oxlint.ui.config.ts",
+        "README.md",
+        "CONTRIBUTING.md",
+        ".github/**"
+      ],
+      "outputs": []
+    },
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
@@ -17,8 +48,12 @@
     "lint:typecheck": {
       "outputs": []
     },
+    "transit": {
+      "dependsOn": ["^transit"],
+      "outputs": []
+    },
     "typecheck": {
-      "dependsOn": ["^typecheck"],
+      "dependsOn": ["transit"],
       "outputs": []
     }
   }
