@@ -1,9 +1,3 @@
-import { sha256sum } from "./nodeCrypto.js";
-import { versions } from "./versions.js";
-import { ipcRenderer } from "electron";
-
-function send(channel: string, message: string) {
-  return ipcRenderer.invoke(channel, message);
-}
-
-export { sha256sum, versions, send };
+export { sha256sum } from "./features/crypto/sha256sum.js";
+export { versions } from "./features/system/versions.js";
+export type { ElectronApi } from "./app/preloadApi.js";

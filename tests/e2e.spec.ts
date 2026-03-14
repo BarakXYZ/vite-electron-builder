@@ -116,49 +116,33 @@ test.describe("Main window web content", async () => {
 });
 
 test.describe("Preload context should be exposed", async () => {
+  test("with a single explicit bridge object", async ({ page }) => {
+    const type = await page.evaluate(() => typeof window.electronAPI);
+    expect(type).toEqual("object");
+  });
+
   test.describe(`versions should be exposed`, async () => {
     test("with same type`", async ({ page }) => {
-      const type = await page.evaluate(() => typeof globalThis[btoa("versions")]);
+      const type = await page.evaluate(() => typeof window.electronAPI.versions);
       expect(type).toEqual("object");
     });
 
     test("with same value", async ({ page, electronVersions }) => {
-      const value = await page.evaluate(() => globalThis[btoa("versions")]);
+      const value = await page.evaluate(() => window.electronAPI.versions);
       expect(value).toEqual(electronVersions);
     });
   });
 
   test.describe(`sha256sum should be exposed`, async () => {
     test("with same type`", async ({ page }) => {
-      const type = await page.evaluate(() => typeof globalThis[btoa("sha256sum")]);
+      const type = await page.evaluate(() => typeof window.electronAPI.sha256sum);
       expect(type).toEqual("function");
     });
 
     test("with same behavior", async ({ page }) => {
       const testString = btoa(`${Date.now() * Math.random()}`);
       const expectedValue = createHash("sha256").update(testString).digest("hex");
-      const value = await page.evaluate((str) => globalThis[btoa("sha256sum")](str), testString);
-      expect(value).toEqual(expectedValue);
-    });
-  });
-
-  test.describe(`send should be exposed`, async () => {
-    test("with same type`", async ({ page }) => {
-      const type = await page.evaluate(() => typeof globalThis[btoa("send")]);
-      expect(type).toEqual("function");
-    });
-
-    test("with same behavior", async ({ page, electronApp }) => {
-      await electronApp.evaluate(async ({ ipcMain }) => {
-        ipcMain.handle("test", (event, message) => btoa(message));
-      });
-
-      const testString = btoa(`${Date.now() * Math.random()}`);
-      const expectedValue = btoa(testString);
-      const value = await page.evaluate(
-        async (str) => await globalThis[btoa("send")]("test", str),
-        testString,
-      );
+      const value = await page.evaluate((str) => window.electronAPI.sha256sum(str), testString);
       expect(value).toEqual(expectedValue);
     });
   });

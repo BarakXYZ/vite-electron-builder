@@ -1,5 +1,7 @@
-import { resolveModuleExportNames } from "mlly";
 import { getChromeMajorVersion } from "@app/electron-versions";
+import { resolveModuleExportNames } from "mlly";
+
+const ELECTRON_API_KEY = "electronAPI";
 
 export default /**
  * @type {import('vite').UserConfig}
@@ -7,14 +9,13 @@ export default /**
  */
 ({
   build: {
-    ssr: true,
-    sourcemap: "inline",
-    outDir: "dist",
-    target: `chrome${getChromeMajorVersion()}`,
     assetsDir: ".",
+    emptyOutDir: true,
     lib: {
       entry: ["src/exposed.ts", "virtual:browser.js"],
     },
+    outDir: "dist",
+    reportCompressedSize: false,
     rollupOptions: {
       output: [
         {
@@ -24,53 +25,46 @@ export default /**
         },
       ],
     },
-    emptyOutDir: true,
-    reportCompressedSize: false,
+    sourcemap: "inline",
+    ssr: true,
+    target: `chrome${getChromeMajorVersion()}`,
   },
-  plugins: [mockExposed(), handleHotReload()],
+  plugins: [mockBrowserPreloadApi(), handleHotReload()],
 });
 
+function createBrowserExportStatement(key) {
+  const propertyAccessor = `globalThis[${JSON.stringify(ELECTRON_API_KEY)}][${JSON.stringify(key)}]`;
+
+  return key === "default"
+    ? `export default ${propertyAccessor};\n`
+    : `export const ${key} = ${propertyAccessor};\n`;
+}
+
 /**
- * This plugin creates a browser (renderer) version of `preload` package.
- * Basically, it just read all nominals you exported from package and define it as globalThis properties
- * expecting that real values were exposed by `electron.contextBridge.exposeInMainWorld()`
- *
- * Example:
- * ```ts
- * // index.ts
- * export const someVar = 'my-value';
- * ```
- *
- * Output
- * ```js
- * // _virtual_browser.mjs
- * export const someVar = globalThis[<hash>] // 'my-value'
- * ```
+ * This plugin creates a browser (renderer) version of the preload package.
+ * It maps the package exports to the single `window.electronAPI` bridge object
+ * exposed by the real preload script.
  */
-function mockExposed() {
+function mockBrowserPreloadApi() {
   const virtualModuleId = "virtual:browser.js";
   const resolvedVirtualModuleId = "\0" + virtualModuleId;
 
   return {
-    name: "electron-main-exposer",
+    async load(id) {
+      if (id !== resolvedVirtualModuleId) {
+        return;
+      }
+
+      const exportedNames = await resolveModuleExportNames("./src/index.ts", {
+        url: import.meta.url,
+      });
+
+      return exportedNames.reduce((source, key) => source + createBrowserExportStatement(key), "");
+    },
+    name: "@app/preload-browser-api",
     resolveId(id) {
       if (id.endsWith(virtualModuleId)) {
         return resolvedVirtualModuleId;
-      }
-    },
-    async load(id) {
-      if (id === resolvedVirtualModuleId) {
-        const exportedNames = await resolveModuleExportNames("./src/index.ts", {
-          url: import.meta.url,
-        });
-        return exportedNames.reduce((s, key) => {
-          return (
-            s +
-            (key === "default"
-              ? `export default globalThis['${btoa(key)}'];\n`
-              : `export const ${key} = globalThis['${btoa(key)}'];\n`)
-          );
-        }, "");
       }
     },
   };
@@ -85,15 +79,13 @@ function handleHotReload() {
   let rendererWatchServer = null;
 
   return {
-    name: "@app/preload-process-hot-reload",
-
     config(config, env) {
       if (env.mode !== "development") {
         return;
       }
 
       const rendererWatchServerProvider = config.plugins.find(
-        (p) => p.name === "@app/renderer-watch-server-provider",
+        (plugin) => plugin.name === "@app/renderer-watch-server-provider",
       );
       if (!rendererWatchServerProvider) {
         throw new Error("Renderer watch server provider not found");
@@ -107,7 +99,7 @@ function handleHotReload() {
         },
       };
     },
-
+    name: "@app/preload-process-hot-reload",
     writeBundle() {
       if (!rendererWatchServer) {
         return;
