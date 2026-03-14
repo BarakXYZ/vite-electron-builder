@@ -7,6 +7,7 @@ import { hardwareAccelerationMode } from "../features/platform/HardwareAccelerat
 import { allowInternalOrigins } from "../features/security/BlockNotAllowedOrigins.js";
 import { allowExternalUrls } from "../features/security/ExternalUrls.js";
 import { denyPermissionRequests } from "../features/security/PermissionRequests.js";
+import { createThemeModule } from "../features/theme/ThemeModule.js";
 import { autoUpdater } from "../features/updates/AutoUpdater.js";
 import { createMainWindowModule } from "../features/windows/main/MainWindowManager.js";
 
@@ -32,13 +33,20 @@ function getInternalOrigins(rendererTarget: AppInitConfig["renderer"]): Set<stri
   return new Set(isRendererUrlTarget(rendererTarget) ? [rendererTarget.origin] : []);
 }
 
-export async function initApp(initConfig: AppInitConfig) {
+export async function initApp({
+  environment = process.env,
+  initConfig,
+}: {
+  environment?: NodeJS.ProcessEnv;
+  initConfig: AppInitConfig;
+}) {
   const moduleRunner = createModuleRunner()
-    .init(createMainWindowModule({ initConfig, openDevTools: import.meta.env.DEV }))
     .init(disallowMultipleAppInstance())
+    .init(createThemeModule({ environment }))
     .init(terminateAppOnLastWindowClose())
     .init(hardwareAccelerationMode({ enable: false }))
     .init(autoUpdater())
+    .init(createMainWindowModule({ initConfig, openDevTools: import.meta.env.DEV }))
 
     // Install DevTools extension if needed.
     // .init(chromeDevToolsExtension({ extension: "VUEJS3_DEVTOOLS" }))

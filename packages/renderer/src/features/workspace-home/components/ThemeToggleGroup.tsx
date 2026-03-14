@@ -23,7 +23,7 @@ const THEME_OPTIONS = [
 ] as const;
 
 export function ThemeToggleGroup() {
-  const { setTheme, theme } = useTheme();
+  const { isLoaded, setTheme, theme } = useTheme();
 
   return (
     <div className="space-y-2">
@@ -32,13 +32,14 @@ export function ThemeToggleGroup() {
         {THEME_OPTIONS.map((option) => (
           <Button
             aria-label={option.label}
-            aria-pressed={theme === option.value}
+            aria-pressed={isLoaded && theme === option.value}
             className={cn(
               "h-8 rounded-md border px-2.5 transition-colors",
-              theme === option.value
+              isLoaded && theme === option.value
                 ? "border-primary/70 bg-primary text-primary-foreground shadow-sm"
                 : "border-transparent text-muted-foreground hover:border-border/70 hover:text-foreground",
             )}
+            disabled={!isLoaded}
             key={option.value}
             onClick={() => setTheme(option.value)}
             size="sm"
@@ -47,10 +48,15 @@ export function ThemeToggleGroup() {
             <option.icon
               className={cn(
                 "size-4",
-                theme === option.value && "drop-shadow-[0_0_6px_oklch(0.82_0.14_248)]",
+                isLoaded && theme === option.value && "drop-shadow-[0_0_6px_oklch(0.82_0.14_248)]",
               )}
             />
-            <span className={cn("hidden sm:inline", theme === option.value && "font-semibold")}>
+            <span
+              className={cn(
+                "hidden sm:inline",
+                isLoaded && theme === option.value && "font-semibold",
+              )}
+            >
               {option.label}
             </span>
           </Button>

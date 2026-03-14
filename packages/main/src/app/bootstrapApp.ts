@@ -62,5 +62,5 @@ export async function bootstrapApp({
 }) {
   configureRuntimePaths(env);
   installUnhandledErrorHandlers(env);
-  await initApp(initConfig);
+  await initApp({ environment: env, initConfig });
 }
