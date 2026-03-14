@@ -22,6 +22,7 @@ This fork keeps the original template's secure Electron foundation and upgrades 
 - Fast TypeScript checks with TSGo.
 - Linting with Oxlint and formatting with Oxfmt.
 - Playwright end-to-end coverage for `light`, `dark`, and `system` theme modes.
+- Background-mode Playwright runs that avoid stealing OS focus during normal E2E work.
 - `electron-builder` packaging and release-friendly defaults.
 
 ## Requirements
@@ -133,7 +134,13 @@ Build every workspace that exposes a `build` script.
 pnpm test
 ```
 
-Build the app and run Playwright Electron end-to-end tests.
+Build the app and run Playwright Electron end-to-end tests in background window mode.
+
+```sh
+pnpm test:interactive
+```
+
+Build the app and run the same Playwright suite with normal interactive window behavior.
 
 ```sh
 pnpm compile
@@ -281,10 +288,18 @@ Run all projects:
 pnpm test
 ```
 
+By default, the test runner launches Electron in a background presentation mode so visible windows do not steal your OS focus while tests run.
+
 Run a single project:
 
 ```sh
-pnpm exec playwright test --project electron-dark
+pnpm test -- --project electron-dark
+```
+
+Opt into normal interactive windows when debugging locally:
+
+```sh
+pnpm test:interactive -- --project electron-dark
 ```
 
 Playwright configuration lives in [`playwright.config.js`](./playwright.config.js).
