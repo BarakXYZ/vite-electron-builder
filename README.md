@@ -1,388 +1,385 @@
 > [!Important]
-> This project is maintained by developer from Ukraine 🇺🇦
+> This project is maintained by a developer from Ukraine 🇺🇦
 >
-> I do my best, but due to Russia's ongoing full-scale invasion of Ukraine, I barely have the energy to support open source projects.
->
-> If my work has been useful to you, please consider [supporting Ukraine](https://stand-with-ukraine.pp.ua/) or [me personally](https://send.monobank.ua/6SmojkkR9i). Even your **$1** has an impact!
+> If this template has been useful to you, please consider [supporting Ukraine](https://stand-with-ukraine.pp.ua/) or [supporting the original author](https://send.monobank.ua/6SmojkkR9i).
 
 ![IMG_0875](https://github.com/user-attachments/assets/590de304-e2c4-4935-9814-c18ade52fd8e)
 
 # Vite Electron Builder Boilerplate
 
-![GitHub last commit](https://img.shields.io/github/last-commit/cawa-93/vite-electron-builder?label=last%20update)
-![GitHub package.json dev/peer/optional dependency version](https://img.shields.io/github/package-json/dependency-version/cawa-93/vite-electron-builder/dev/electron)
-![GitHub package.json dev/peer/optional dependency version](https://img.shields.io/github/package-json/dependency-version/cawa-93/vite-electron-builder/dev/electron-builder)
-![GitHub package.json dev/peer/optional dependency version](https://img.shields.io/github/package-json/dependency-version/cawa-93/vite-electron-builder/dev/vite?filename=packages%2Fmain%2Fpackage.json)
-![GitHub package.json dev/peer/optional dependency version](https://img.shields.io/github/package-json/dependency-version/cawa-93/vite-electron-builder/dev/playwright)
+A production-ready Electron starter built on a workspace monorepo, Vite, React, Tailwind CSS v4, shadcn/ui, TSGo, Oxlint, Oxfmt, and Playwright.
 
-This is a template for secure electron applications. Written following the latest safety requirements, recommendations
-and best practices.
+This fork keeps the original template's secure Electron foundation and upgrades the stack around it with stricter tooling, stronger UI primitives, explicit theme infrastructure, and cleaner process-oriented architecture.
 
-## Get started
+## What You Get
 
-Follow these steps to get started with the template:
+- Electron with security-focused defaults and a process-first architecture.
+- A workspace monorepo using `pnpm` workspaces.
+- A default renderer built with Vite + React + Tailwind CSS v4.
+- Shared shadcn/ui primitives in a dedicated `packages/ui` package.
+- Electron-native theme handling backed by `nativeTheme.themeSource`.
+- Detached DevTools window management with persisted geometry.
+- Fast TypeScript checks with TSGo.
+- Linting with Oxlint and formatting with Oxfmt.
+- Playwright end-to-end coverage for `light`, `dark`, and `system` theme modes.
+- `electron-builder` packaging and release-friendly defaults.
 
-1. Click the **[Use this template](https://github.com/cawa-93/vite-electron-builder/generate)** button (you must be logged in) or just clone this repo.
-2. Go to project folder and run `pnpm install`.
-3. Start application in development mode by `pnpm start`.
-4. Compile executable by `pnpm compile`.
+## Requirements
 
-That's all you need. 😉
+- Node.js `>=24.0.0`
+- `pnpm@10`
 
-> [!TIP]
-> You can explore the demo application for various frameworks and operating systems in the [Deployment](https://github.com/cawa-93/vite-electron-builder/deployments) section.
-> This will allow you to see how the application performs across different environments.
-> Additionally, you can verify the auto-update functionality by installing an outdated version of the application.
+This repo currently pins Node `24.14.0` in [`.prototools`](./.prototools). If you use Proto/Prototools, it will pick that version automatically.
 
-❤️ **If you like this template, give a ⭐ or [send support](https://www.buymeacoffee.com/kozack/)!**
-
-## Features
-
-### Lightweight
-
-When designing this template, I tried to keep it minimal, using the platform's native features to the maximum and minimizing the number of third-party dependencies.
-
-### Electron
-
-- This template uses the latest electron version with all the latest security patches.
-- The architecture of the application is built according to the security [guides](https://www.electronjs.org/docs/tutorial/security) and best practices.
-- The latest version of the [electron-builder] is used to package the application.
-
-### Automatic tests
-
-- End-to-end are placed in the root [`tests`](tests) directory and use [playwright].
-- You may write any unit tests inside each package and use whatever you ~~want~~ need.
-
-### Continuous Integration
-
-- The configured workflow will check the types for each push and PR.
-- Code signing supported. See [code-signing documentation](https://www.electron.build/code-signing.html).
-
-### Auto-update
-
-Each time you push changes to the `main` branch,
-the [`ci`](.github/workflows/ci.yml) workflow starts to create and deploy a new application version with then will be downloaded and applied by each app instance.
-
-## Project Structure
-
-The project is designed as monorepo where each part of the application is an independent package.
-Each package could have own tech stack, tests, dependencies, frameworks, etc.
-All internal names are prefixed by `@app/*`.
-There are no technical reasons for this.
-It's just for you to make it easier to understand the architecture.
-
-Initially, the repository contains a few packages.
-
-### Packages with building tools:
-
-- [`packages/integrate-renderer`](packages/integrate-renderer) - A helper package that is not included in the runtime.
-  It is used in `pnpm run init` to configure a new interface package.
-- [`packages/electron-versions`](packages/electron-versions) - A set of helper functions to get the versions of internal components bundled within Electron.
-
-### Packages with app logic:
-
-- [`packages/main`](packages/main) - Implementation of Electron's [**main script**](https://www.electronjs.org/docs/tutorial/quick-start#create-the-main-script-file).
-- [`packages/preload`](packages/preload) - Implementation of Electron's [**preload scripts**](https://www.electronjs.org/docs/latest/tutorial/tutorial-preload).
-- [`packages/renderer`](packages/renderer) - Default React + Tailwind renderer package.
-- [`packages/ui`](packages/ui) - Shared shadcn/ui component package for scalable UI reuse across apps.
-
-### Renderer package included
-
-The repository includes a default renderer package at [`packages/renderer`](packages/renderer)
-based on Vite + React + Tailwind CSS.
-Shared shadcn/ui primitives live in [`packages/ui`](packages/ui).
-
-There is only one requirement: the template expects to import renderer by `@app/renderer` name.
-
-> [!TIP]
-> You can replace the default renderer in interactive mode by removing `packages/renderer` and running `pnpm run init`.
-
-> [!NOTE]
-> If you are using a bundler other than vite,
-> you may need to slightly change the [dev-mode.js](packages/dev-mode.js) script to run it correctly.
-
-## How It works
-
-### Compile executable
-
-When an application is ready to distribute, you need to compile it into executable.
-We are using [electron-builder] for
-this.
-
-- You can compile application locally by `pnpm compile`.
-  In this case, you will get executable that you cat share, but it will not support auto-updates out-of-box.
-- To have auto-updater, you should compile an application and publish it to one or more supported sources for distribution. In this case, all application instances will download and apply all new updates. This is done by GitHub actions in [`ci.yml`](.github/workflows/ci.yml) and [`deploy.yml`](.github/workflows/deploy.yml).
-
-> [!TIP]
-> This template is configured to use GitHub Releases to distribute updates, but you can configure whatever you need.
-> Find more in [electron-builder docs](https://www.electron.build/configuration/publish).
-
-### Working with third-party dependencies
-
-Because the `renderer` works and builds like a _regular web application_, you can only use dependencies that support the
-browser or compile to a browser-friendly format.
-
-This means that in the `renderer` you are free to use any frontend dependencies such as Vue, React, lodash, axios and so
-on. However, you _CANNOT_ use any native Node.js APIs, such as, `systeminformation`. These APIs are _only_ available in
-a Node.js runtime environment and will cause your application to crash if used in the `renderer` layer. Instead, if you
-need access to Node.js runtime APIs in your frontend, export a function form the `preload` package.
-
-All dependencies that require Node.js api can be used in
-the [`preload` script](https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts).
-
-#### Expose in the main world
-
-Here is an example. Let's say you need to read some data from the file system or database in the renderer.
-
-In the preload context, create a function that reads and returns data. To make the function announced in the preload
-available in the render, you usually need to call
-the [`electron.contextBridge.exposeInMainWorld`](https://www.electronjs.org/ru/docs/latest/api/context-bridge).
-
-However, this template is designed to use all power of ES modules.
-You can import anything from `preload` in `renderer`.
-All the data will quietly throw through the `electron.contextBridge.exposeInMainWorld()`,
-so you don't need to worry about it.
-
-```ts
-// preload/src/index.ts
-import { readFile } from "node:fs/promises";
-
-// Encapsulate types if you use typescript
-interface UserData {
-  prop: string;
-}
-
-// Will call `electron.contextBridge.exposeInMainWorld('getUserData', getUserData)`
-export function getUserData(): Promise<UserData> {
-  return readFile("/path/to/file/in/user/filesystem.json", { encoding: "utf8" }).then(JSON.parse);
-}
-```
-
-Now you can import and call the method in renderer
-
-```ts
-// renderer/src/anywere/component.ts
-import { getUserData } from "@app/preload";
-
-// Method will came from exposed context
-// const userData = globalThis['getUserData']
-const userData = await getUserData();
-```
-
-> [!TIP]
-> Find more
-> in [Context Isolation tutorial](https://www.electronjs.org/docs/tutorial/context-isolation#security-considerations).
-
-### Working with Electron API
-
-Although the preload has access to all of Node.js API, it **still runs in the BrowserWindow context**, so only limited
-electron modules are available in it.
-
-> [!TIP]
-> Check the [electron docs](https://www.electronjs.org/ru/docs/latest/api/clipboard) for the full list of available
-> methods.
-
-All other electron methods can be invoked in the `main`.
-
-As a result, the architecture of interaction between all modules is as follows:
-
-```mermaid
-sequenceDiagram
-renderer->>+preload: Read data from file system
-preload->>-renderer: Data
-renderer->>preload: Maximize window
-activate preload
-preload-->>main: Invoke IPC command
-activate main
-main-->>preload: IPC response
-deactivate main
-preload->>renderer: Window maximized
-deactivate preload
-```
-
-> [!TIP]
-> Find more in [Inter-Process Communication tutorial](https://www.electronjs.org/docs/latest/tutorial/ipc).
-
-### Modes and Environment Variables
-
-All environment variables are set as part of the `import.meta`, so you can access them vie the following
-way: `import.meta.env`.
-
-> [!NOTE]
-> If you are using TypeScript and want to get code completion,
-> you must add all the environment variables to the [`ImportMetaEnv` in `types/env.d.ts`](types/env.d.ts).
-
-The mode option is used to specify the value of `import.meta.env.MODE` and the corresponding environment variables files
-that need to be loaded.
-
-By default, there are two modes:
-
-- `production` is used by default
-- `development` is used by `pnpm start` script
-
-When running the build script, the environment variables are loaded from the following files in your project root:
-
-```
-.env                # loaded in all cases
-.env.local          # loaded in all cases, ignored by git
-.env.[mode]         # only loaded in specified env mode
-.env.[mode].local   # only loaded in specified env mode, ignored by git
-```
-
-> [!WARNING]
-> To prevent accidentally leaking env variables to the client, only variables prefixed with `VITE_` are exposed to your
-> Vite-processed code.
-
-For example, let's take the following `.env` file:
-
-```
-DB_PASSWORD=foobar
-VITE_SOME_KEY=123
-```
-
-Only `VITE_SOME_KEY` will be exposed as `import.meta.env.VITE_SOME_KEY` to your client source code, but `DB_PASSWORD`
-will not.
-
-> [!TIP]
-> You can change that prefix or add another. See [`envPrefix`](https://vitejs.dev/config/shared-options.html#envprefix).
-
-### Scripts
+## Quick Start
 
 ```sh
+pnpm install
 pnpm start
 ```
 
-Start application in development more with hot-reload.
-
----
+Build all workspaces:
 
 ```sh
 pnpm build
 ```
 
-Runs the `build` command in all workspaces if present.
-
----
-
-```sh
-pnpm compile
-```
-
-First runs the `build` script,
-then compiles the project into executable using `electron-builder` with the specified configuration.
-
----
-
-```sh
-pnpm compile -- --dir -c.asar=false
-```
-
-Same as `pnpm compile` but pass to `electron-builder` additional parameters to disable asar archive and installer
-creating.
-Useful for debugging compiled application.
-
----
+Run end-to-end tests:
 
 ```sh
 pnpm test
 ```
 
-Executes end-to-end tests on **compiled app** using Playwright.
+Build a distributable app with `electron-builder`:
 
----
+```sh
+pnpm compile
+```
+
+## Stack
+
+### Runtime
+
+- [Electron](https://www.electronjs.org/)
+- [Vite](https://vite.dev/)
+- [React](https://react.dev/)
+- [Tailwind CSS v4](https://tailwindcss.com/docs/installation/using-vite)
+- [shadcn/ui](https://ui.shadcn.com/docs/installation/vite)
+
+### Tooling
+
+- [pnpm workspaces](https://pnpm.io/workspaces)
+- [Playwright](https://playwright.dev/docs/api/class-electron)
+- [Oxlint](https://oxc.rs/docs/guide/usage/linter/migrate-from-eslint)
+- [Oxfmt](https://oxc.rs/docs/guide/usage/formatter/migrate-from-prettier)
+- [`@typescript/native-preview` (TSGo)](https://www.npmjs.com/package/@typescript/native-preview)
+
+## Architecture
+
+This repo is organized around Electron process boundaries first, then feature boundaries inside each package.
+
+```text
+packages/
+  main/       # Electron main process
+  preload/    # Electron preload bridge
+  renderer/   # Vite + React application
+  ui/         # Shared shadcn/ui components, hooks, styles
+```
+
+Inside the app-facing packages, the code follows this pattern:
+
+```text
+src/
+  app/        # bootstrap, composition, entry wiring
+  features/   # vertical feature slices
+```
+
+That gives us a structure that matches Electron's official process model while staying scalable as features grow.
+
+### Package Overview
+
+- [`packages/main`](./packages/main) - main-process orchestration, windows, theme state, security rules, updates, lifecycle.
+- [`packages/preload`](./packages/preload) - explicit `contextBridge` surface exposed to the renderer.
+- [`packages/renderer`](./packages/renderer) - the default desktop UI built with React.
+- [`packages/ui`](./packages/ui) - shared design-system package for shadcn/ui primitives and styles.
+- [`packages/electron-versions`](./packages/electron-versions) - Electron version helpers used by build config.
+- [`packages/integrate-renderer`](./packages/integrate-renderer) - helper package used when bootstrapping/replacing a renderer package.
+
+## Development Workflow
+
+Start the dev environment:
+
+```sh
+pnpm start
+```
+
+This runs the Electron dev flow with hot reload.
+
+### Key Scripts
+
+```sh
+pnpm start
+```
+
+Run Electron in development mode.
+
+```sh
+pnpm build
+```
+
+Build every workspace that exposes a `build` script.
+
+```sh
+pnpm test
+```
+
+Build the app and run Playwright Electron end-to-end tests.
+
+```sh
+pnpm compile
+```
+
+Build the app and package it with `electron-builder`.
 
 ```sh
 pnpm fmt
-```
-
-Formats supported files with `oxfmt`.
-
----
-
-```sh
 pnpm fmt:check
 ```
 
-Checks formatting with `oxfmt` without changing files.
-
----
+Format or verify formatting with Oxfmt.
 
 ```sh
 pnpm lint
-```
-
-Runs Oxlint in fast syntax mode for both `packages/renderer` and `packages/ui`.
-Renderer uses `@nkzw/oxlint-config`; shared UI uses `oxlint.ui.config.ts` tuned for shadcn-generated code.
-
----
-
-```sh
 pnpm lint:type-aware
-```
-
-Runs Oxlint with TypeScript-aware rules via `oxlint-tsgolint` for renderer and shared UI.
-
----
-
-```sh
 pnpm lint:typecheck
 ```
 
-Runs Oxlint with type-aware rules and TypeScript diagnostics (`--type-check`) for renderer and shared UI.
+Run Oxlint across:
 
----
+- `packages/main`
+- `packages/preload`
+- `packages/renderer`
+- `packages/ui`
+- `tests`
 
-```sh
-pnpm shadcn:add:app sidebar-01
-```
+`lint:type-aware` enables TypeScript-aware rules.
 
-Adds app shells/blocks via the renderer workspace config.
-
----
-
-```sh
-pnpm shadcn:add:ui button
-```
-
-Adds shared shadcn/ui primitives directly into `packages/ui`.
-
----
+`lint:typecheck` adds TypeScript diagnostics on top of type-aware linting.
 
 ```sh
 pnpm typecheck
 ```
 
-Runs the `typecheck` command in all workspaces if present.
+Run TSGo type checking in all workspaces that expose `typecheck`.
 
----
+## UI Workflow
+
+The default renderer already includes:
+
+- React
+- Tailwind CSS v4
+- shadcn/ui
+- a shared `packages/ui` package for reusable primitives
+
+### shadcn/ui in a Monorepo
+
+This repo intentionally separates app-level blocks from shared primitives.
+
+Add app-specific blocks/components to the renderer:
 
 ```sh
-pnpm create-renderer
+pnpm shadcn:add:app sidebar-01
 ```
 
-Initializes a new Vite project named `renderer`. Basically same as `pnpm create vite`.
-
----
+Add shared primitives to the UI package:
 
 ```sh
-pnpm integrate-renderer
+pnpm shadcn:add:ui button
 ```
 
-Starts the integration process of the renderer using the Vite Electron builder.
+Configuration lives in:
 
----
+- [`packages/renderer/components.json`](./packages/renderer/components.json)
+- [`packages/ui/components.json`](./packages/ui/components.json)
+
+The setup follows the official Vite, monorepo, and dark-mode guidance from shadcn/ui.
+
+## Theme System
+
+Theme is handled as an Electron feature, not as an ad hoc renderer toggle.
+
+### Source of Truth
+
+The source of truth is Electron's [`nativeTheme.themeSource`](https://www.electronjs.org/docs/latest/api/native-theme):
+
+- `light`
+- `dark`
+- `system`
+
+The main process owns theme state, persists the user's preference, and broadcasts changes to renderer windows.
+
+Relevant code:
+
+- [`packages/main/src/features/theme`](./packages/main/src/features/theme)
+- [`packages/preload/src/features/theme/theme.ts`](./packages/preload/src/features/theme/theme.ts)
+- [`packages/renderer/src/features/theme/electronThemeController.ts`](./packages/renderer/src/features/theme/electronThemeController.ts)
+- [`packages/ui/src/components/theme-provider.tsx`](./packages/ui/src/components/theme-provider.tsx)
+
+### Why This Pattern
+
+This matches Electron's official guidance better than relying only on `localStorage` and `matchMedia()` in the renderer:
+
+- main process owns native app theme state
+- preload exposes a narrow API surface
+- renderer consumes an explicit theme controller
+- tests can validate explicit and system theme behavior consistently
+
+## Testing
+
+Playwright tests live in [`tests`](./tests) and run against the compiled Electron app.
+
+Current project matrix:
+
+- `electron-light`
+- `electron-dark`
+- `electron-system`
+
+That means the suite verifies:
+
+- explicit light override behavior
+- explicit dark override behavior
+- true system-mode behavior
+- renderer/media/theme-state consistency
+
+Run all projects:
+
+```sh
+pnpm test
+```
+
+Run a single project:
+
+```sh
+pnpm exec playwright test --project electron-dark
+```
+
+Playwright configuration lives in [`playwright.config.js`](./playwright.config.js).
+
+## Main / Preload / Renderer Contract
+
+This repo favors a narrow, explicit preload bridge in line with Electron's security guidance.
+
+The exposed bridge is available as:
+
+```ts
+window.electronAPI;
+```
+
+Example capabilities currently include:
+
+- `window.electronAPI.versions`
+- `window.electronAPI.sha256sum()`
+- `window.electronAPI.theme.getState()`
+- `window.electronAPI.theme.setThemeSource()`
+- `window.electronAPI.theme.subscribe()`
+
+For simple exported preload functions, the repo also generates a renderer-safe browser shim so explicit exports can still be consumed from `@app/preload` where appropriate.
+
+### Example
+
+```ts
+const themeState = await window.electronAPI.theme.getState();
+
+await window.electronAPI.theme.setThemeSource("dark");
+```
+
+If you need new native capabilities:
+
+1. add a main-process feature or IPC handler
+2. expose a narrow preload method
+3. consume it from the renderer
+4. add Playwright coverage when the capability affects behavior
+
+## Security Defaults
+
+This template keeps Electron security as a first-class concern.
+
+Current defaults include:
+
+- `contextIsolation: true`
+- `nodeIntegration: false`
+- permission requests denied by default
+- external URL handling constrained in main
+- renderer CSP in `index.html`
+- explicit preload bridge instead of generic IPC passthrough
+
+Relevant code:
+
+- [`packages/main/src/features/security`](./packages/main/src/features/security)
+- [`packages/preload/src/app/exposeElectronApi.ts`](./packages/preload/src/app/exposeElectronApi.ts)
+
+> [!NOTE]
+> The default `BrowserWindow` still uses `sandbox: false` because the starter preload currently depends on Node-capable APIs. If you remove that dependency, enabling sandboxing is the next recommended hardening step according to Electron's security guidance.
+
+## DevTools Behavior
+
+The dev template includes a detached DevTools implementation that avoids the common focus and persistence problems.
+
+It currently:
+
+- opens DevTools in a separate window
+- persists size, position, and maximized state
+- restores safely across display changes
+- avoids stealing focus from the app window on open
+
+Relevant code:
+
+- [`packages/main/src/features/windows/devtools`](./packages/main/src/features/windows/devtools)
+
+## Packaging and Distribution
+
+This repo uses [`electron-builder`](https://www.electron.build/) for packaging.
+
+Build a distributable app:
+
+```sh
+pnpm compile
+```
+
+Build unpacked output for inspection/debugging:
+
+```sh
+pnpm compile -- --dir -c.asar=false
+```
+
+The builder configuration lives in [`electron-builder.mjs`](./electron-builder.mjs).
+
+## Replacing the Renderer
+
+If you want to replace the bundled renderer package entirely:
 
 ```sh
 pnpm run init
 ```
 
-Set up a missing renderer package by creating a new renderer, integrating it, and installing the necessary packages.
+This uses the helper scripts in [`packages/integrate-renderer`](./packages/integrate-renderer).
 
-## Contribution
+## Contributing
 
-See [Contributing Guide](CONTRIBUTING.md).
+See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
-[vite]: https://github.com/vitejs/vite/
-[electron]: https://github.com/electron/electron
-[electron-builder]: https://github.com/electron-userland/electron-builder
-[playwright]: https://playwright.dev
+## References
+
+- [Electron process model](https://www.electronjs.org/docs/latest/tutorial/process-model)
+- [Electron security tutorial](https://www.electronjs.org/docs/latest/tutorial/security)
+- [Electron context isolation](https://www.electronjs.org/docs/latest/tutorial/context-isolation)
+- [Electron IPC tutorial](https://www.electronjs.org/docs/latest/tutorial/ipc)
+- [Electron nativeTheme](https://www.electronjs.org/docs/latest/api/native-theme)
+- [Playwright Electron](https://playwright.dev/docs/api/class-electron)
+- [Playwright projects](https://playwright.dev/docs/test-projects)
+- [Playwright color scheme emulation](https://playwright.dev/docs/emulation#color-scheme-and-media)
+- [Tailwind CSS with Vite](https://tailwindcss.com/docs/installation/using-vite)
+- [shadcn/ui Vite install](https://ui.shadcn.com/docs/installation/vite)
+- [shadcn/ui monorepo](https://ui.shadcn.com/docs/monorepo)
+- [shadcn/ui dark mode for Vite](https://ui.shadcn.com/docs/dark-mode/vite)
+- [pnpm workspaces](https://pnpm.io/workspaces)
