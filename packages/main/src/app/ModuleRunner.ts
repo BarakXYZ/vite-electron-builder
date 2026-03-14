@@ -17,9 +17,10 @@ class ModuleRunner implements PromiseLike<void> {
   }
 
   init(module: AppModule) {
-    this.#promise = this.#promise.then(async () => {
-      await module.enable(this.#createModuleContext());
-    });
+    const result = module.enable(this.#createModuleContext());
+    const resultPromise = Promise.resolve(result);
+
+    this.#promise = this.#promise.then(() => resultPromise);
 
     return this;
   }
