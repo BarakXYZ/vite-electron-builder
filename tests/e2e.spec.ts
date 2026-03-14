@@ -1,106 +1,80 @@
-import type { ElectronApplication, JSHandle } from "playwright";
-import { _electron as electron } from "playwright";
-import { expect, test as base } from "@playwright/test";
+import { expect, test as base, type Page } from "@playwright/test";
 import type { BrowserWindow } from "electron";
-import { globSync } from "glob";
-import { platform } from "node:process";
+import { _electron as electron, type ElectronApplication, type JSHandle } from "playwright";
 import { createHash } from "node:crypto";
 
-process.env.PLAYWRIGHT_TEST = "true";
-
-// Declare the types of your fixtures.
 type TestFixtures = {
   electronApp: ElectronApplication;
   electronVersions: NodeJS.ProcessVersions;
+  page: Page;
 };
+
+type MainWindowState = {
+  isCrashed: boolean;
+  isDevToolsOpened: boolean;
+  isVisible: boolean;
+};
+
+process.env.PLAYWRIGHT_TEST = "true";
+
+async function getMainWindowState(
+  electronApp: ElectronApplication,
+  page: Page,
+): Promise<MainWindowState> {
+  const windowHandle: JSHandle<BrowserWindow> = await electronApp.browserWindow(page);
+
+  return windowHandle.evaluate((mainWindow): Promise<MainWindowState> => {
+    const getState = () => ({
+      isCrashed: mainWindow.webContents.isCrashed(),
+      isDevToolsOpened: mainWindow.webContents.isDevToolsOpened(),
+      isVisible: mainWindow.isVisible(),
+    });
+
+    return new Promise((resolve) => {
+      if (mainWindow.isVisible()) {
+        resolve(getState());
+        return;
+      }
+
+      mainWindow.once("ready-to-show", () => resolve(getState()));
+    });
+  });
+}
 
 const test = base.extend<TestFixtures>({
   electronApp: [
     async ({}, use) => {
-      /**
-       * Executable path depends on root package name!
-       */
-      let executablePattern = "dist/*/root{,.*}";
-      if (platform === "darwin") {
-        executablePattern += "/Contents/*/root";
-      }
-
-      const [executablePath] = globSync(executablePattern);
-      if (!executablePath) {
-        throw new Error("App Executable path not found");
-      }
-
       const electronApp = await electron.launch({
-        executablePath: executablePath,
-        args: ["--no-sandbox"],
-      });
-
-      electronApp.on("console", (msg) => {
-        if (msg.type() === "error") {
-          console.error(`[electron][${msg.type()}] ${msg.text()}`);
-        }
+        args: ["."],
       });
 
       await use(electronApp);
-
-      // This code runs after all the tests in the worker process.
       await electronApp.close();
     },
-    { scope: "worker", auto: true } as any,
+    { auto: true, scope: "worker" },
   ],
-
-  page: async ({ electronApp }, use) => {
-    const page = await electronApp.firstWindow();
-    // capture errors
-    page.on("pageerror", (error) => {
-      console.error(error);
-    });
-    // capture console messages
-    page.on("console", (msg) => {
-      console.log(msg.text());
-    });
-
-    await page.waitForLoadState("load");
-    await use(page);
-  },
 
   electronVersions: async ({ electronApp }, use) => {
     await use(await electronApp.evaluate(() => process.versions));
   },
+
+  page: async ({ electronApp }, use) => {
+    const page = await electronApp.firstWindow();
+
+    await page.waitForLoadState("load");
+    await use(page);
+  },
 });
 
 test("Main window state", async ({ electronApp, page }) => {
-  const window: JSHandle<BrowserWindow> = await electronApp.browserWindow(page);
-  const windowState = await window.evaluate(
-    (
-      mainWindow,
-    ): Promise<{ isVisible: boolean; isDevToolsOpened: boolean; isCrashed: boolean }> => {
-      const getState = () => ({
-        isVisible: mainWindow.isVisible(),
-        isDevToolsOpened: mainWindow.webContents.isDevToolsOpened(),
-        isCrashed: mainWindow.webContents.isCrashed(),
-      });
-
-      return new Promise((resolve) => {
-        /**
-         * The main window is created hidden, and is shown only when it is ready.
-         * See {@link ../packages/main/src/mainWindow.ts} function
-         */
-        if (mainWindow.isVisible()) {
-          resolve(getState());
-        } else {
-          mainWindow.once("ready-to-show", () => resolve(getState()));
-        }
-      });
-    },
-  );
+  const windowState = await getMainWindowState(electronApp, page);
 
   expect(windowState.isCrashed, "The app has crashed").toEqual(false);
   expect(windowState.isVisible, "The main window was not visible").toEqual(true);
   expect(windowState.isDevToolsOpened, "The DevTools panel was open").toEqual(false);
 });
 
-test.describe("Main window web content", async () => {
+test.describe("Main window web content", () => {
   test("The main window has an interactive button", async ({ page }) => {
     const element = page.getByRole("button", { name: "count is 0" });
     await expect(element).toBeVisible();
@@ -115,25 +89,25 @@ test.describe("Main window web content", async () => {
   });
 });
 
-test.describe("Preload context should be exposed", async () => {
+test.describe("Preload context should be exposed", () => {
   test("with a single explicit bridge object", async ({ page }) => {
     const type = await page.evaluate(() => typeof window.electronAPI);
     expect(type).toEqual("object");
   });
 
-  test.describe(`versions should be exposed`, async () => {
+  test.describe("versions should be exposed", () => {
     test("with same type`", async ({ page }) => {
       const type = await page.evaluate(() => typeof window.electronAPI.versions);
       expect(type).toEqual("object");
     });
 
-    test("with same value", async ({ page, electronVersions }) => {
+    test("with same value", async ({ electronVersions, page }) => {
       const value = await page.evaluate(() => window.electronAPI.versions);
       expect(value).toEqual(electronVersions);
     });
   });
 
-  test.describe(`sha256sum should be exposed`, async () => {
+  test.describe("sha256sum should be exposed", () => {
     test("with same type`", async ({ page }) => {
       const type = await page.evaluate(() => typeof window.electronAPI.sha256sum);
       expect(type).toEqual("function");
