@@ -1,0 +1,20 @@
+{
+  "name": "@app/desktop-integrate-renderer",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Helper scripts for integrating a renderer workspace into the desktop app",
+  "files": [
+    "create-renderer.js",
+    "index.js"
+  ],
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "create-renderer": "node create-renderer.js",
+    "lint": "oxlint . --config ../../oxlint.config.ts",
+    "lint:fix": "oxlint . --config ../../oxlint.config.ts --fix",
+    "lint:type-aware": "oxlint . --config ../../oxlint.config.ts --type-aware",
+    "lint:typecheck": "oxlint . --config ../../oxlint.config.ts --type-aware --type-check",
+    "start": "node index.js --no-warnings"
+  }
+}

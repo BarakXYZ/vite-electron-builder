@@ -1,0 +1,31 @@
+{
+  "name": "@app/desktop",
+  "version": "3.1.0",
+  "private": true,
+  "description": "Desktop Electron app workspace",
+  "author": {
+    "name": "Alex Kozack",
+    "email": "kozackunisoft@gmail.com",
+    "url": "https://kozack.me"
+  },
+  "type": "module",
+  "main": "./scripts/entry-point.mjs",
+  "scripts": {
+    "build:packages": "pnpm --filter @app/desktop-main --filter @app/desktop-preload --filter @app/desktop-renderer --if-present run build",
+    "compile": "pnpm run build:packages && pnpm --dir ../.. exec electron-builder build --projectDir ./apps/desktop --config ./electron-builder.mjs",
+    "lint": "oxlint playwright.config.js tests types/preload-api.d.ts --config ../../oxlint.tests.config.ts",
+    "lint:fix": "oxlint playwright.config.js tests types/preload-api.d.ts --config ../../oxlint.tests.config.ts --fix",
+    "lint:type-aware": "oxlint playwright.config.js tests types/preload-api.d.ts --config ../../oxlint.tests.config.ts --type-aware",
+    "lint:typecheck": "oxlint playwright.config.js tests types/preload-api.d.ts --config ../../oxlint.tests.config.ts --type-aware --type-check",
+    "start": "node ./scripts/dev-mode.js",
+    "test": "node ./scripts/run-e2e.js",
+    "test:background": "node ./scripts/run-e2e.js --window-mode background",
+    "test:hidden": "node ./scripts/run-e2e.js --window-mode hidden",
+    "test:interactive": "node ./scripts/run-e2e.js --window-mode interactive"
+  },
+  "dependencies": {
+    "@app/desktop-main": "workspace:*",
+    "@app/desktop-preload": "workspace:*",
+    "@app/desktop-renderer": "workspace:*"
+  }
+}

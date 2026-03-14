@@ -26,6 +26,10 @@
     "./styles.css": "./src/styles/globals.css"
   },
   "scripts": {
+    "lint": "oxlint . --config ../../oxlint.ui.config.ts",
+    "lint:fix": "oxlint . --config ../../oxlint.ui.config.ts --fix",
+    "lint:type-aware": "oxlint . --config ../../oxlint.ui.config.ts --type-aware",
+    "lint:typecheck": "oxlint . --config ../../oxlint.ui.config.ts --type-aware --type-check",
     "typecheck": "tsgo --noEmit"
   },
   "dependencies": {

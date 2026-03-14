@@ -1,0 +1,39 @@
+{
+  "name": "@app/desktop-renderer",
+  "version": "0.0.0",
+  "private": true,
+  "files": [
+    "dist/**"
+  ],
+  "type": "module",
+  "main": "./dist/index.html",
+  "exports": {
+    ".": {
+      "default": "./dist/index.html"
+    }
+  },
+  "scripts": {
+    "build": "tsgo -b && vite build --base ./",
+    "dev": "vite",
+    "lint": "oxlint . --config ../../oxlint.config.ts",
+    "lint:fix": "oxlint . --config ../../oxlint.config.ts --fix",
+    "lint:type-aware": "oxlint . --config ../../oxlint.config.ts --type-aware",
+    "lint:typecheck": "oxlint . --config ../../oxlint.config.ts --type-aware --type-check",
+    "preview": "vite preview",
+    "typecheck": "tsgo -b"
+  },
+  "devDependencies": {
+    "@app/ui": "workspace:*",
+    "@tailwindcss/vite": "^4.2.1",
+    "@types/node": "^25.3.3",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tailwindcss": "^4.2.1",
+    "typescript": "~5.9.3",
+    "vite": "^7.3.1",
+    "@app/desktop-preload": "workspace:*"
+  }
+}

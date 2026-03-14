@@ -1,0 +1,18 @@
+{
+  "name": "@app/desktop-electron-versions",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Helper functions for Electron-bundled component versions",
+  "files": [
+    "README.md",
+    "index.js"
+  ],
+  "type": "module",
+  "main": "./index.js",
+  "scripts": {
+    "lint": "oxlint . --config ../../oxlint.config.ts",
+    "lint:fix": "oxlint . --config ../../oxlint.config.ts --fix",
+    "lint:type-aware": "oxlint . --config ../../oxlint.config.ts --type-aware",
+    "lint:typecheck": "oxlint . --config ../../oxlint.config.ts --type-aware --type-check"
+  }
+}

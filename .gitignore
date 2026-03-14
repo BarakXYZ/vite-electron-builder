@@ -6,6 +6,7 @@ thumbs.db
 playwright-report
 test-results
 coverage
+.turbo
 
 .eslintcache
 

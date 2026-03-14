@@ -7,16 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      '@app/main':
-        specifier: workspace:*
-        version: link:packages/main
-      '@app/preload':
-        specifier: workspace:*
-        version: link:packages/preload
-      '@app/renderer':
-        specifier: workspace:*
-        version: link:packages/renderer
     devDependencies:
       '@nkzw/eslint-plugin':
         specifier: ^2.0.0
@@ -24,9 +14,6 @@ importers:
       '@nkzw/oxlint-config':
         specifier: ^1.0.1
         version: 1.0.1(eslint@9.39.3(jiti@2.6.1))(oxlint@1.51.0(oxlint-tsgolint@0.16.0))(typescript@5.9.3)
-      '@npmcli/map-workspaces':
-        specifier: 5.0.3
-        version: 5.0.3
       '@playwright/test':
         specifier: 1.58.2
         version: 1.58.2
@@ -72,29 +59,38 @@ importers:
       playwright:
         specifier: ^1.58.2
         version: 1.58.2
+      turbo:
+        specifier: ^2.6.0
+        version: 2.8.17
       vite:
         specifier: 7.3.1
         version: 7.3.1(@types/node@25.3.3)(jiti@2.6.1)(lightningcss@1.31.1)
 
-  packages/electron-versions: {}
-
-  packages/integrate-renderer: {}
-
-  packages/main:
+  apps/desktop:
     dependencies:
-      '@app/preload':
+      '@app/desktop-main':
         specifier: workspace:*
-        version: link:../preload
-      '@app/renderer':
+        version: link:../../packages/desktop-main
+      '@app/desktop-preload':
         specifier: workspace:*
-        version: link:../renderer
+        version: link:../../packages/desktop-preload
+      '@app/desktop-renderer':
+        specifier: workspace:*
+        version: link:../../packages/desktop-renderer
+
+  packages/desktop-electron-versions: {}
+
+  packages/desktop-integrate-renderer: {}
+
+  packages/desktop-main:
+    dependencies:
       electron-updater:
         specifier: 6.8.3
         version: 6.8.3
     devDependencies:
-      '@app/electron-versions':
+      '@app/desktop-electron-versions':
         specifier: workspace:*
-        version: link:../electron-versions
+        version: link:../desktop-electron-versions
       electron-devtools-installer:
         specifier: 4.0.0
         version: 4.0.0
@@ -105,11 +101,11 @@ importers:
         specifier: 7.3.1
         version: 7.3.1(@types/node@25.3.3)(jiti@2.6.1)(lightningcss@1.31.1)
 
-  packages/preload:
+  packages/desktop-preload:
     devDependencies:
-      '@app/electron-versions':
+      '@app/desktop-electron-versions':
         specifier: workspace:*
-        version: link:../electron-versions
+        version: link:../desktop-electron-versions
       mlly:
         specifier: 1.8.0
         version: 1.8.0
@@ -120,18 +116,14 @@ importers:
         specifier: 7.3.1
         version: 7.3.1(@types/node@25.3.3)(jiti@2.6.1)(lightningcss@1.31.1)
 
-  packages/renderer:
-    dependencies:
+  packages/desktop-renderer:
+    devDependencies:
+      '@app/desktop-preload':
+        specifier: workspace:*
+        version: link:../desktop-preload
       '@app/ui':
         specifier: workspace:*
         version: link:../ui
-      react:
-        specifier: ^19.2.0
-        version: 19.2.4
-      react-dom:
-        specifier: ^19.2.0
-        version: 19.2.4(react@19.2.4)
-    devDependencies:
       '@tailwindcss/vite':
         specifier: ^4.2.1
         version: 4.2.1(vite@7.3.1(@types/node@25.3.3)(jiti@2.6.1)(lightningcss@1.31.1))
@@ -147,6 +139,12 @@ importers:
       '@vitejs/plugin-react':
         specifier: ^5.1.1
         version: 5.1.4(vite@7.3.1(@types/node@25.3.3)(jiti@2.6.1)(lightningcss@1.31.1))
+      react:
+        specifier: ^19.2.0
+        version: 19.2.4
+      react-dom:
+        specifier: ^19.2.0
+        version: 19.2.4(react@19.2.4)
       tailwindcss:
         specifier: ^4.2.1
         version: 4.2.1
@@ -613,10 +611,6 @@ packages:
   '@floating-ui/utils@0.2.11':
     resolution: {integrity: sha512-RiB/yIh78pcIxl6lLMG0CgBXAZ2Y0eVHqMPYugu+9U0AeT6YBeiJpf7lbdJNIugFP5SIjwNRgo4DhR1Qxi26Gg==}
 
-  '@gar/promise-retry@1.0.2':
-    resolution: {integrity: sha512-Lm/ZLhDZcBECta3TmCQSngiQykFdfw+QtI1/GYMsZd4l3nG+P8WLB16XuS7WaBGLQ+9E+cOcWQsth9cayuGt8g==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
   '@hono/node-server@1.19.10':
     resolution: {integrity: sha512-hZ7nOssGqRgyV3FVVQdfi+U4q02uB23bpnYpdvNXkYTRRyWx84b7yf1ans+dnJ/7h41sGL3CeQTfO+ZGxuO+Iw==}
     engines: {node: '>=18.14.1'}
@@ -761,26 +755,6 @@ packages:
   '@npmcli/fs@4.0.0':
     resolution: {integrity: sha512-/xGlezI6xfGO9NwuJlnwz/K14qD1kCSAGtacBHnGzeAIuJGazcp45KP5NuyARXoKb7cwulAGWVsbeSxdG/cb0Q==}
     engines: {node: ^18.17.0 || >=20.5.0}
-
-  '@npmcli/git@7.0.2':
-    resolution: {integrity: sha512-oeolHDjExNAJAnlYP2qzNjMX/Xi9bmu78C9dIGr4xjobrSKbuMYCph8lTzn4vnW3NjIqVmw/f8BCfouqyJXlRg==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
-  '@npmcli/map-workspaces@5.0.3':
-    resolution: {integrity: sha512-o2grssXo1e774E5OtEwwrgoszYRh0lqkJH+Pb9r78UcqdGJRDRfhpM8DvZPjzNLLNYeD/rNbjOKM3Ss5UABROw==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
-  '@npmcli/name-from-folder@4.0.0':
-    resolution: {integrity: sha512-qfrhVlOSqmKM8i6rkNdZzABj8MKEITGFAY+4teqBziksCQAOLutiAxM1wY2BKEd8KjUSpWmWCYxvXr0y4VTlPg==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
-  '@npmcli/package-json@7.0.5':
-    resolution: {integrity: sha512-iVuTlG3ORq2iaVa1IWUxAO/jIp77tUKBhoMjuzYW2kL4MLN1bi/ofqkZ7D7OOwh8coAx1/S2ge0rMdGv8sLSOQ==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
-  '@npmcli/promise-spawn@9.0.1':
-    resolution: {integrity: sha512-OLUaoqBuyxeTqUvjA3FZFiXUfYC1alp3Sa99gW3EUDz3tZ3CbXDdcZ7qWKBzicrJleIgucoWamWH1saAmH/l2Q==}
-    engines: {node: ^20.17.0 || >=22.9.0}
 
   '@open-draft/deferred-promise@2.2.0':
     resolution: {integrity: sha512-CecwLWx3rhxVQF6V4bAgPS5t+So2sTbPgAzafKkVizyi7tlwpcFpdFqq+wqF2OwNBmqFuu6tOyouTuxgpMfzmA==}
@@ -3098,10 +3072,6 @@ packages:
     resolution: {integrity: sha512-kyCuEOWjJqZuDbRHzL8V93NzQhwIB71oFWSyzVo+KPZI+pnQPPxucdkrOZvkLRnrf5URsQM+IJ09Dw29cRALIA==}
     engines: {node: '>=10'}
 
-  hosted-git-info@9.0.2:
-    resolution: {integrity: sha512-M422h7o/BR3rmCQ8UHi7cyyMqKltdP9Uo+J2fXK+RSAY+wTcKOIRyhTuKv4qn+DJf3g+PL890AzId5KZpX+CBg==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
   http-cache-semantics@4.2.0:
     resolution: {integrity: sha512-dTxcvPXqPvXBQpq5dUr6mEMJX4oIEFv6bwom3FDwKRDsuIjjJGANqhBuoAn9c1RQJIdAKav33ED65E2ys+87QQ==}
 
@@ -3166,10 +3136,6 @@ packages:
 
   inherits@2.0.4:
     resolution: {integrity: sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==}
-
-  ini@6.0.0:
-    resolution: {integrity: sha512-IBTdIkzZNOpqm7q3dRqJvMaldXjDHWkEDfrwGEQTs5eaQMWV+djAhR+wahyNNMAa+qpbDUhBMVt4ZKNwpPm7xQ==}
-    engines: {node: ^20.17.0 || >=22.9.0}
 
   ip-address@10.0.1:
     resolution: {integrity: sha512-NWv9YLW4PoW2B7xtzaS3NCot75m6nK7Icdv0o3lfMceJVRfSoQwqD4wEH5rLwoKJwUiZ/rfpiVBhnaF0FK4HoA==}
@@ -3284,10 +3250,6 @@ packages:
     resolution: {integrity: sha512-6B3tLtFqtQS4ekarvLVMZ+X+VlvQekbe4taUkf/rhVO3d/h0M2rfARm/pXLcPEsjjMsFgrFgSrhQIxcSVrBz8w==}
     engines: {node: '>=18'}
 
-  isexe@4.0.0:
-    resolution: {integrity: sha512-FFUtZMpoZ8RqHS3XeXEmHWLA4thH+ZxCv2lOiPIn1Xc7CxrqhWzNSDzD+/chS/zbYezmiwWLdQC09JdQKmthOw==}
-    engines: {node: '>=20'}
-
   jackspeak@3.4.3:
     resolution: {integrity: sha512-OGlZQpz2yfahA/Rd1Y8Cd9SIEsqvXkLVoSw/cgwhnhFMDbsQFeZYoJJ7bIZBS9BcamUW96asq/npPWugM+RQBw==}
 
@@ -3320,10 +3282,6 @@ packages:
 
   json-parse-even-better-errors@2.3.1:
     resolution: {integrity: sha512-xyFwyhro/JEof6Ghe2iz2NcXoj2sloNsWr/XsERDK/oiPCfaNhl5ONfp+jQdAZRQQ0IJWNzH9zIZF7li91kh2w==}
-
-  json-parse-even-better-errors@5.0.0:
-    resolution: {integrity: sha512-ZF1nxZ28VhQouRWhUcVlUIN3qwSgPuswK05s/HIaoetAoE/9tngVmCHjSxmSQPav1nd+lPtTL0YZ/2AFdR/iYQ==}
-    engines: {node: ^20.17.0 || >=22.9.0}
 
   json-schema-traverse@0.4.1:
     resolution: {integrity: sha512-xbbCH5dCYU5T8LcEhhuh7HJ88HXuW3qsI3Y0zOZFKfZEHcpWiHU/Jxzk629Brsab/mMiHQti9wMP+845RPe3Vg==}
@@ -3693,22 +3651,6 @@ packages:
     resolution: {integrity: sha512-DlL+XwOy3NxAQ8xuC0okPgK46iuVNAK01YN7RueYBqqFeGsBjV9XmCAzAdgt+667bCl5kPh9EqKKDwnaPG1I7A==}
     engines: {node: '>=10'}
 
-  npm-install-checks@8.0.0:
-    resolution: {integrity: sha512-ScAUdMpyzkbpxoNekQ3tNRdFI8SJ86wgKZSQZdUxT+bj0wVFpsEMWnkXP0twVe1gJyNF5apBWDJhhIbgrIViRA==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
-  npm-normalize-package-bin@5.0.0:
-    resolution: {integrity: sha512-CJi3OS4JLsNMmr2u07OJlhcrPxCeOeP/4xq67aWNai6TNWWbTrlNDgl8NcFKVlcBKp18GPj+EzbNIgrBfZhsag==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
-  npm-package-arg@13.0.2:
-    resolution: {integrity: sha512-IciCE3SY3uE84Ld8WZU23gAPPV9rIYod4F+rc+vJ7h7cwAJt9Vk6TVsK60ry7Uj3SRS3bqRRIGuTp9YVlk6WNA==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
-  npm-pick-manifest@11.0.3:
-    resolution: {integrity: sha512-buzyCfeoGY/PxKqmBqn1IUJrZnUi1VVJTdSSRPGI60tJdUhUoSQFhs0zycJokDdOznQentgrpf8LayEHyyYlqQ==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
   npm-run-path@4.0.1:
     resolution: {integrity: sha512-S48WzZW777zhNIrn7gxOlISNAqi9ZC/uQFnRdbeIHhZhCA6UqpkOT8T1G7BvfdgP4Er8gF4sUbaS0i7QvIfCWw==}
     engines: {node: '>=8'}
@@ -3931,10 +3873,6 @@ packages:
     resolution: {integrity: sha512-Azwzvl90HaF0aCz1JrDdXQykFakSSNPaPoiZ9fm5qJIMHioDZEi7OAdRwSm6rSoPtY3Qutnm3L7ogmg3dc+wbQ==}
     engines: {node: ^18.17.0 || >=20.5.0}
 
-  proc-log@6.1.0:
-    resolution: {integrity: sha512-iG+GYldRf2BQ0UDUAd6JQ/RwzaQy6mXmsk/IzlYyal4A4SNFw54MeH4/tLkF4I5WoWG9SQwuqWzS99jaFQHBuQ==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
   process-nextick-args@2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
 
@@ -4086,10 +4024,6 @@ packages:
 
   retry@0.12.0:
     resolution: {integrity: sha512-9LkiTwjUh6rT555DtE9rTX+BKByPfrMzEAtnlEtdEwr3Nkffwiihqe2bWADg+OQRjt9gl6ICdmB/ZFDCGAtSow==}
-    engines: {node: '>= 4'}
-
-  retry@0.13.1:
-    resolution: {integrity: sha512-XQBQ3I8W1Cge0Seh+6gjj03LbmRFWuoszgK9ooCpwYIrhhoO80pfq4cUkU5DkknwfOfFteRwlZ56PYOGYyFWdg==}
     engines: {node: '>= 4'}
 
   rettime@0.10.1:
@@ -4245,15 +4179,6 @@ packages:
   source-map@0.6.1:
     resolution: {integrity: sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==}
     engines: {node: '>=0.10.0'}
-
-  spdx-exceptions@2.5.0:
-    resolution: {integrity: sha512-PiU42r+xO4UbUS1buo3LPJkjlO7430Xn5SVAhdpzzsPHsjbYVflnnFdATgabnLude+Cqu25p6N+g2lw/PFsa4w==}
-
-  spdx-expression-parse@4.0.0:
-    resolution: {integrity: sha512-Clya5JIij/7C6bRR22+tnGXbc4VKlibKSVj2iHvVeX5iMW7s1SIQlqu699JkODJJIhh/pUu8L0/VLh8xflD+LQ==}
-
-  spdx-license-ids@3.0.23:
-    resolution: {integrity: sha512-CWLcCCH7VLu13TgOH+r8p1O/Znwhqv/dbb6lqWy67G+pT1kHmeD/+V36AVb/vq8QMIQwVShJ6Ssl5FPh0fuSdw==}
 
   sprintf-js@1.1.3:
     resolution: {integrity: sha512-Oo+0REFV59/rz3gfJNKQiBlwfHaSESl1pcGyABQsnnIfWOFt6JNj5gCog2U6MLZ//IGYD+nA8nI+mTShREReaA==}
@@ -4421,6 +4346,40 @@ packages:
 
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
+
+  turbo-darwin-64@2.8.17:
+    resolution: {integrity: sha512-ZFkv2hv7zHpAPEXBF6ouRRXshllOavYc+jjcrYyVHvxVTTwJWsBZwJ/gpPzmOKGvkSjsEyDO5V6aqqtZzwVF+Q==}
+    cpu: [x64]
+    os: [darwin]
+
+  turbo-darwin-arm64@2.8.17:
+    resolution: {integrity: sha512-5DXqhQUt24ycEryXDfMNKEkW5TBHs+QmU23a2qxXwwFDaJsWcPo2obEhBxxdEPOv7qmotjad+09RGeWCcJ9JDw==}
+    cpu: [arm64]
+    os: [darwin]
+
+  turbo-linux-64@2.8.17:
+    resolution: {integrity: sha512-KLUbz6w7F73D/Ihh51hVagrKR0/CTsPEbRkvXLXvoND014XJ4BCrQUqSxlQ4/hu+nqp1v5WlM85/h3ldeyujuA==}
+    cpu: [x64]
+    os: [linux]
+
+  turbo-linux-arm64@2.8.17:
+    resolution: {integrity: sha512-pJK67XcNJH40lTAjFu7s/rUlobgVXyB3A3lDoq+/JccB3hf+SysmkpR4Itlc93s8LEaFAI4mamhFuTV17Z6wOg==}
+    cpu: [arm64]
+    os: [linux]
+
+  turbo-windows-64@2.8.17:
+    resolution: {integrity: sha512-EijeQ6zszDMmGZLP2vT2RXTs/GVi9rM0zv2/G4rNu2SSRSGFapgZdxgW4b5zUYLVaSkzmkpWlGfPfj76SW9yUg==}
+    cpu: [x64]
+    os: [win32]
+
+  turbo-windows-arm64@2.8.17:
+    resolution: {integrity: sha512-crpfeMPkfECd4V1PQ/hMoiyVcOy04+bWedu/if89S15WhOalHZ2BYUi6DOJhZrszY+mTT99OwpOsj4wNfb/GHQ==}
+    cpu: [arm64]
+    os: [win32]
+
+  turbo@2.8.17:
+    resolution: {integrity: sha512-YwPsNSqU2f/RXU/+Kcb7cPkPZARxom4+me7LKEdN5jsvy2tpfze3zDZ4EiGrJnvOm9Avu9rK0aaYsP7qZ3iz7A==}
+    hasBin: true
 
   tw-animate-css@1.4.0:
     resolution: {integrity: sha512-7bziOlRqH0hJx80h/3mbicLW7o8qLsH5+RaLR2t+OHM3D0JlWGODQKQ4cxbK7WlvmUxpcj6Kgu6EKqjrGFe3QQ==}
@@ -4597,11 +4556,6 @@ packages:
   which@5.0.0:
     resolution: {integrity: sha512-JEdGzHwwkrbWoGOlIHqQ5gtprKGOenpDHpxE9zVR1bWbOtYRyPPHMe9FaP6x61CmNaTThSkb0DAJte5jD+DmzQ==}
     engines: {node: ^18.17.0 || >=20.5.0}
-    hasBin: true
-
-  which@6.0.1:
-    resolution: {integrity: sha512-oGLe46MIrCRqX7ytPUf66EAYvdeMIZYn3WaocqqKZAxrBpkqHfL/qvTyJ/bTk5+AqHCjXmrv3CEWgy368zhRUg==}
-    engines: {node: ^20.17.0 || >=22.9.0}
     hasBin: true
 
   word-wrap@1.2.5:
@@ -5157,10 +5111,6 @@ snapshots:
 
   '@floating-ui/utils@0.2.11': {}
 
-  '@gar/promise-retry@1.0.2':
-    dependencies:
-      retry: 0.13.1
-
   '@hono/node-server@1.19.10(hono@4.12.5)':
     dependencies:
       hono: 4.12.5
@@ -5331,40 +5281,6 @@ snapshots:
   '@npmcli/fs@4.0.0':
     dependencies:
       semver: 7.7.4
-
-  '@npmcli/git@7.0.2':
-    dependencies:
-      '@gar/promise-retry': 1.0.2
-      '@npmcli/promise-spawn': 9.0.1
-      ini: 6.0.0
-      lru-cache: 11.2.6
-      npm-pick-manifest: 11.0.3
-      proc-log: 6.1.0
-      semver: 7.7.4
-      which: 6.0.1
-
-  '@npmcli/map-workspaces@5.0.3':
-    dependencies:
-      '@npmcli/name-from-folder': 4.0.0
-      '@npmcli/package-json': 7.0.5
-      glob: 13.0.6
-      minimatch: 10.2.4
-
-  '@npmcli/name-from-folder@4.0.0': {}
-
-  '@npmcli/package-json@7.0.5':
-    dependencies:
-      '@npmcli/git': 7.0.2
-      glob: 13.0.6
-      hosted-git-info: 9.0.2
-      json-parse-even-better-errors: 5.0.0
-      proc-log: 6.1.0
-      semver: 7.7.4
-      spdx-expression-parse: 4.0.0
-
-  '@npmcli/promise-spawn@9.0.1':
-    dependencies:
-      which: 6.0.1
 
   '@open-draft/deferred-promise@2.2.0': {}
 
@@ -7736,10 +7652,6 @@ snapshots:
     dependencies:
       lru-cache: 6.0.0
 
-  hosted-git-info@9.0.2:
-    dependencies:
-      lru-cache: 11.2.6
-
   http-cache-semantics@4.2.0: {}
 
   http-errors@2.0.1:
@@ -7807,8 +7719,6 @@ snapshots:
 
   inherits@2.0.4: {}
 
-  ini@6.0.0: {}
-
   ip-address@10.0.1: {}
 
   ip-address@10.1.0: {}
@@ -7873,8 +7783,6 @@ snapshots:
 
   isexe@3.1.5: {}
 
-  isexe@4.0.0: {}
-
   jackspeak@3.4.3:
     dependencies:
       '@isaacs/cliui': 8.0.2
@@ -7902,8 +7810,6 @@ snapshots:
   json-buffer@3.0.1: {}
 
   json-parse-even-better-errors@2.3.1: {}
-
-  json-parse-even-better-errors@5.0.0: {}
 
   json-schema-traverse@0.4.1: {}
 
@@ -8249,26 +8155,6 @@ snapshots:
 
   normalize-url@6.1.0: {}
 
-  npm-install-checks@8.0.0:
-    dependencies:
-      semver: 7.7.4
-
-  npm-normalize-package-bin@5.0.0: {}
-
-  npm-package-arg@13.0.2:
-    dependencies:
-      hosted-git-info: 9.0.2
-      proc-log: 6.1.0
-      semver: 7.7.4
-      validate-npm-package-name: 7.0.2
-
-  npm-pick-manifest@11.0.3:
-    dependencies:
-      npm-install-checks: 8.0.0
-      npm-normalize-package-bin: 5.0.0
-      npm-package-arg: 13.0.2
-      semver: 7.7.4
-
   npm-run-path@4.0.1:
     dependencies:
       path-key: 3.1.1
@@ -8520,8 +8406,6 @@ snapshots:
 
   proc-log@5.0.0: {}
 
-  proc-log@6.1.0: {}
-
   process-nextick-args@2.0.1: {}
 
   progress@2.0.3: {}
@@ -8727,8 +8611,6 @@ snapshots:
       signal-exit: 4.1.0
 
   retry@0.12.0: {}
-
-  retry@0.13.1: {}
 
   rettime@0.10.1: {}
 
@@ -8971,15 +8853,6 @@ snapshots:
 
   source-map@0.6.1: {}
 
-  spdx-exceptions@2.5.0: {}
-
-  spdx-expression-parse@4.0.0:
-    dependencies:
-      spdx-exceptions: 2.5.0
-      spdx-license-ids: 3.0.23
-
-  spdx-license-ids@3.0.23: {}
-
   sprintf-js@1.1.3:
     optional: true
 
@@ -9139,6 +9012,33 @@ snapshots:
 
   tslib@2.8.1: {}
 
+  turbo-darwin-64@2.8.17:
+    optional: true
+
+  turbo-darwin-arm64@2.8.17:
+    optional: true
+
+  turbo-linux-64@2.8.17:
+    optional: true
+
+  turbo-linux-arm64@2.8.17:
+    optional: true
+
+  turbo-windows-64@2.8.17:
+    optional: true
+
+  turbo-windows-arm64@2.8.17:
+    optional: true
+
+  turbo@2.8.17:
+    optionalDependencies:
+      turbo-darwin-64: 2.8.17
+      turbo-darwin-arm64: 2.8.17
+      turbo-linux-64: 2.8.17
+      turbo-linux-arm64: 2.8.17
+      turbo-windows-64: 2.8.17
+      turbo-windows-arm64: 2.8.17
+
   tw-animate-css@1.4.0: {}
 
   type-check@0.4.0:
@@ -9265,10 +9165,6 @@ snapshots:
   which@5.0.0:
     dependencies:
       isexe: 3.1.5
-
-  which@6.0.1:
-    dependencies:
-      isexe: 4.0.0
 
   word-wrap@1.2.5: {}
 

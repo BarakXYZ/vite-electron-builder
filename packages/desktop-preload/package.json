@@ -1,0 +1,33 @@
+{
+  "name": "@app/desktop-preload",
+  "version": "0.0.0",
+  "private": true,
+  "files": [
+    "dist/**"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./dist/_virtual_browser.mjs"
+    },
+    "./exposed.mjs": {
+      "types": "./src/exposed.d.ts",
+      "default": "./dist/exposed.mjs"
+    }
+  },
+  "scripts": {
+    "build": "vite build",
+    "lint": "oxlint src vite.config.js --config ../../oxlint.config.ts",
+    "lint:fix": "oxlint src vite.config.js --config ../../oxlint.config.ts --fix",
+    "lint:type-aware": "oxlint src vite.config.js --config ../../oxlint.config.ts --type-aware",
+    "lint:typecheck": "oxlint src vite.config.js --config ../../oxlint.config.ts --type-aware --type-check",
+    "typecheck": "tsgo --noEmit"
+  },
+  "devDependencies": {
+    "@app/desktop-electron-versions": "workspace:*",
+    "mlly": "1.8.0",
+    "typescript": "5.9.3",
+    "vite": "7.3.1"
+  }
+}
