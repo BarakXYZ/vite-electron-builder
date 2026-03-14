@@ -23,7 +23,7 @@ It ships a future-friendly `apps/*` + `packages/*` topology, Turborepo task orch
 - Node.js `>=24.0.0`
 - `pnpm@10`
 
-This repo currently pins Node `24.14.0` in [`.prototools`](./.prototools). If you use Proto/Prototools, that version is selected automatically.
+This repo currently pins Node `24.14.0` in [`.prototools`](./.prototools) and [`.node-version`](./.node-version). If you use Proto/Prototools, that version is selected automatically, and CI reads the same version through `actions/setup-node`.
 
 ## Quick Start
 
@@ -209,6 +209,7 @@ The CI workflows read them here:
 
 - [`.github/workflows/ci.yml`](./.github/workflows/ci.yml)
 - [`.github/workflows/compile-and-test.yml`](./.github/workflows/compile-and-test.yml)
+- [`.github/workflows/main.yml`](./.github/workflows/main.yml)
 
 If they are not configured, CI still works, but Turbo falls back to local-only caching for that run.
 
