@@ -15,21 +15,12 @@ export async function getMainWindowState(
 ): Promise<MainWindowState> {
   const windowHandle: JSHandle<BrowserWindow> = await electronApp.browserWindow(page);
 
-  return windowHandle.evaluate((mainWindow): Promise<MainWindowState> => {
-    const getState = () => ({
+  return windowHandle.evaluate((mainWindow): MainWindowState => {
+    return {
       backgroundColor: mainWindow.getBackgroundColor(),
       isCrashed: mainWindow.webContents.isCrashed(),
       isDevToolsOpened: mainWindow.webContents.isDevToolsOpened(),
       isVisible: mainWindow.isVisible(),
-    });
-
-    return new Promise((resolve) => {
-      if (mainWindow.isVisible()) {
-        resolve(getState());
-        return;
-      }
-
-      mainWindow.once("ready-to-show", () => resolve(getState()));
-    });
+    };
   });
 }

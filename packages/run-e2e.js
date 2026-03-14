@@ -1,7 +1,7 @@
 import { spawn } from "node:child_process";
+import { loadE2ERuntimeConfig } from "../tests/support/e2eRuntimeConfig.js";
 
-const DEFAULT_WINDOW_MODE = "background";
-const VALID_WINDOW_MODES = new Set(["background", "interactive"]);
+const VALID_WINDOW_MODES = new Set(["hidden", "background", "interactive"]);
 
 function getPnpmCommand() {
   return process.platform === "win32" ? "pnpm.cmd" : "pnpm";
@@ -9,7 +9,7 @@ function getPnpmCommand() {
 
 function parseArguments(argv) {
   const playwrightArguments = [];
-  let windowMode = DEFAULT_WINDOW_MODE;
+  let windowModeOverride;
 
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index];
@@ -26,7 +26,7 @@ function parseArguments(argv) {
         );
       }
 
-      windowMode = nextValue;
+      windowModeOverride = nextValue;
       index += 1;
       continue;
     }
@@ -36,7 +36,7 @@ function parseArguments(argv) {
 
   return {
     playwrightArguments,
-    windowMode,
+    windowModeOverride,
   };
 }
 
@@ -59,11 +59,15 @@ function run(command, args, environment) {
   });
 }
 
-const { playwrightArguments, windowMode } = parseArguments(process.argv.slice(2));
+const { playwrightArguments, windowModeOverride } = parseArguments(process.argv.slice(2));
 const pnpmCommand = getPnpmCommand();
+const runtimeConfig = loadE2ERuntimeConfig({
+  environment: process.env,
+  windowModeOverride,
+});
 const environment = {
   ...process.env,
-  APP_E2E_WINDOW_MODE: windowMode,
+  APP_E2E_WINDOW_MODE: runtimeConfig.windowMode,
 };
 
 const buildExitCode = await run(pnpmCommand, ["run", "build"], environment);

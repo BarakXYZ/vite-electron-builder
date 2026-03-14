@@ -1,6 +1,6 @@
 import type { BrowserWindow } from "electron";
 
-const E2E_WINDOW_PRESENTATION_MODES = ["background", "interactive"] as const;
+const E2E_WINDOW_PRESENTATION_MODES = ["hidden", "background", "interactive"] as const;
 const TRUE_LIKE_VALUES = new Set(["1", "true", "yes", "on"]);
 
 export type E2EWindowPresentationMode = (typeof E2E_WINDOW_PRESENTATION_MODES)[number];
@@ -38,14 +38,20 @@ export function resolveE2EWindowPresentationMode(
   }
 
   const configuredMode = environment.APP_E2E_WINDOW_MODE;
-  return isE2EWindowPresentationMode(configuredMode) ? configuredMode : "background";
+  return isE2EWindowPresentationMode(configuredMode) ? configuredMode : "hidden";
 }
 
 export function presentWindow(
   browserWindow: BrowserWindow,
   environment: NodeJS.ProcessEnv = process.env,
 ): void {
-  if (resolveE2EWindowPresentationMode(environment) === "background") {
+  const presentationMode = resolveE2EWindowPresentationMode(environment);
+
+  if (presentationMode === "hidden") {
+    return;
+  }
+
+  if (presentationMode === "background") {
     browserWindow.showInactive();
     return;
   }

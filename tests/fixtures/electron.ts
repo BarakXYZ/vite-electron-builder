@@ -2,6 +2,7 @@ import { expect, test as base } from "@playwright/test";
 import type { ElectronApplication } from "playwright";
 import { _electron as electron } from "playwright";
 import { createElectronAppProfile } from "../support/electronAppProfile";
+import { loadE2ERuntimeConfig, type E2EWindowMode } from "../support/e2eRuntimeConfig.js";
 
 export type AppThemeSource = "dark" | "light" | "system";
 
@@ -12,6 +13,7 @@ type TestFixtures = {
 type WorkerFixtures = {
   electronApp: ElectronApplication;
   themeSource: AppThemeSource;
+  windowMode: E2EWindowMode;
 };
 
 function resolveProjectThemeSource(colorScheme: unknown): AppThemeSource {
@@ -24,12 +26,13 @@ function resolveProjectThemeSource(colorScheme: unknown): AppThemeSource {
 
 export const test = base.extend<TestFixtures, WorkerFixtures>({
   electronApp: [
-    async ({ themeSource }, use, workerInfo) => {
+    async ({ themeSource, windowMode }, use, workerInfo) => {
       const profile = await createElectronAppProfile(workerInfo.parallelIndex);
       const electronApp = await electron.launch({
         args: ["."],
         env: {
           ...process.env,
+          APP_E2E_WINDOW_MODE: windowMode,
           APP_LOGS_PATH: profile.logsPath,
           APP_SESSION_DATA_PATH: profile.sessionDataPath,
           APP_THEME_SOURCE: themeSource,
@@ -67,6 +70,13 @@ export const test = base.extend<TestFixtures, WorkerFixtures>({
       await use(resolveProjectThemeSource(workerInfo.project.use.colorScheme));
     },
     { box: true, scope: "worker", title: "resolve theme project" },
+  ],
+
+  windowMode: [
+    async ({}, use) => {
+      await use(loadE2ERuntimeConfig({ environment: process.env }).windowMode);
+    },
+    { box: true, scope: "worker", title: "resolve e2e window mode" },
   ],
 });
 

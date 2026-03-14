@@ -46,6 +46,8 @@
     "shadcn:add:app": "pnpm dlx shadcn@latest add --cwd packages/renderer",
     "shadcn:add:ui": "pnpm dlx shadcn@latest add --cwd packages/ui",
     "test": "node packages/run-e2e.js",
+    "test:background": "node packages/run-e2e.js --window-mode background",
+    "test:hidden": "node packages/run-e2e.js --window-mode hidden",
     "test:interactive": "node packages/run-e2e.js --window-mode interactive",
     "start": "node packages/dev-mode.js",
     "typecheck": "pnpm -r --if-present run typecheck",
