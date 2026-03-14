@@ -3,7 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "description": "A set of helper functions to get the versions of internal components bundled within Electron",
-  "files": [],
+  "files": [
+    "README.md",
+    "index.js"
+  ],
   "type": "module",
   "main": "./index.js"
 }

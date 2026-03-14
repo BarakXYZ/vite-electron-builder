@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "description": "",
-  "files": [],
+  "files": [
+    "index.js"
+  ],
   "type": "module",
   "main": "index.js",
   "scripts": {

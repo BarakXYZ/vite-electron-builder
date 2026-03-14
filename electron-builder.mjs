@@ -93,13 +93,25 @@ async function getListOfFilesFromEachWorkspace() {
     pkg,
   });
 
-  const allFilesToInclude = [];
+  const workspacePackages = new Map();
 
   for (const [name, path] of workspaces) {
     const pkgPath = join(path, "package.json");
     const { default: workspacePkg } = await import(pathToFileURL(pkgPath), {
       with: { type: "json" },
     });
+
+    workspacePackages.set(name, workspacePkg);
+  }
+
+  const runtimeWorkspaceNames = collectRuntimeWorkspaceNames(workspacePackages);
+  const allFilesToInclude = [];
+
+  for (const name of runtimeWorkspaceNames) {
+    const workspacePkg = workspacePackages.get(name);
+    if (!workspacePkg) {
+      continue;
+    }
 
     let patterns = workspacePkg.files || ["dist/**", "package.json"];
 
@@ -108,4 +120,39 @@ async function getListOfFilesFromEachWorkspace() {
   }
 
   return allFilesToInclude;
+}
+
+function collectRuntimeWorkspaceNames(workspacePackages) {
+  const pending = Object.entries(pkg.dependencies ?? {})
+    .filter(([, version]) => typeof version === "string" && version.startsWith("workspace:"))
+    .map(([dependencyName]) => dependencyName);
+
+  const included = new Set();
+
+  while (pending.length > 0) {
+    const dependencyName = pending.pop();
+    if (!dependencyName || included.has(dependencyName)) {
+      continue;
+    }
+
+    const workspacePkg = workspacePackages.get(dependencyName);
+    if (!workspacePkg) {
+      continue;
+    }
+
+    included.add(dependencyName);
+
+    const runtimeDependencies = {
+      ...workspacePkg.dependencies,
+      ...workspacePkg.optionalDependencies,
+    };
+
+    for (const nestedDependencyName of Object.keys(runtimeDependencies)) {
+      if (workspacePackages.has(nestedDependencyName)) {
+        pending.push(nestedDependencyName);
+      }
+    }
+  }
+
+  return included;
 }

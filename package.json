@@ -8,6 +8,9 @@
     "email": "kozackunisoft@gmail.com",
     "url": "https://kozack.me"
   },
+  "workspaces": [
+    "packages/*"
+  ],
   "type": "module",
   "main": "packages/entry-point.mjs",
   "scripts": {
