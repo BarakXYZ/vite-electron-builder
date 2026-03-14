@@ -134,7 +134,13 @@ Build every workspace that exposes a `build` script.
 pnpm test
 ```
 
-Build the app and run Playwright Electron end-to-end tests in background window mode.
+Build the app and run Playwright Electron end-to-end tests using the checked-in E2E runtime config.
+
+```sh
+pnpm test:background
+```
+
+Build the app and force visible background-mode windows that do not steal focus.
 
 ```sh
 pnpm test:interactive
@@ -288,12 +294,28 @@ Run all projects:
 pnpm test
 ```
 
-By default, the test runner launches Electron in a background presentation mode so visible windows do not steal your OS focus while tests run.
+Default E2E runtime behavior is controlled from:
+
+- [`tests/e2e.runtime.config.json`](./tests/e2e.runtime.config.json)
+
+Current modes:
+
+- `hidden` - keep app windows hidden while tests run
+- `background` - show windows without stealing OS focus
+- `interactive` - show and focus windows normally for debugging
+
+The checked-in default is `hidden`, so routine `pnpm test` runs stay out of your way while you work.
 
 Run a single project:
 
 ```sh
 pnpm test -- --project electron-dark
+```
+
+Temporarily force visible background-mode windows:
+
+```sh
+pnpm test:background -- --project electron-dark
 ```
 
 Opt into normal interactive windows when debugging locally:
