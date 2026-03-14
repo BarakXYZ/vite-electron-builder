@@ -1,30 +1,13 @@
 import { useState } from "react";
-import { LaptopIcon, MoonIcon, SunIcon } from "lucide-react";
+
 import { Button } from "@app/ui/components/button";
-import { useTheme } from "@app/ui/components/theme-provider";
-import { cn } from "@app/ui/lib/utils";
 
-function App() {
+import { ThemeToggleGroup } from "./components/ThemeToggleGroup.js";
+
+const COMMANDS = ["pnpm start", "pnpm build", "pnpm lint:typecheck", "pnpm typecheck"] as const;
+
+export function WorkspaceHomeScreen() {
   const [count, setCount] = useState(0);
-  const { setTheme, theme } = useTheme();
-
-  const themeOptions = [
-    {
-      icon: SunIcon,
-      label: "Light",
-      value: "light",
-    },
-    {
-      icon: MoonIcon,
-      label: "Dark",
-      value: "dark",
-    },
-    {
-      icon: LaptopIcon,
-      label: "System",
-      value: "system",
-    },
-  ] as const;
 
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-6 py-10">
@@ -44,39 +27,7 @@ function App() {
               It&apos;s time to build something awesome.
             </p>
           </div>
-          <div className="space-y-2">
-            <p className="text-xs tracking-[0.24em] text-muted-foreground uppercase">Theme</p>
-            <div className="inline-flex items-center rounded-lg border border-border/60 bg-background/75 p-1 shadow-xs">
-              {themeOptions.map((option) => (
-                <Button
-                  aria-label={option.label}
-                  aria-pressed={theme === option.value}
-                  className={cn(
-                    "h-8 rounded-md border px-2.5 transition-colors",
-                    theme === option.value
-                      ? "border-primary/70 bg-primary text-primary-foreground shadow-sm"
-                      : "border-transparent text-muted-foreground hover:border-border/70 hover:text-foreground",
-                  )}
-                  key={option.value}
-                  onClick={() => setTheme(option.value)}
-                  size="sm"
-                  variant="ghost"
-                >
-                  <option.icon
-                    className={cn(
-                      "size-4",
-                      theme === option.value && "drop-shadow-[0_0_6px_oklch(0.82_0.14_248)]",
-                    )}
-                  />
-                  <span
-                    className={cn("hidden sm:inline", theme === option.value && "font-semibold")}
-                  >
-                    {option.label}
-                  </span>
-                </Button>
-              ))}
-            </div>
-          </div>
+          <ThemeToggleGroup />
         </header>
 
         <div className="space-y-3">
@@ -102,22 +53,13 @@ function App() {
         </div>
 
         <div className="grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
-          <p>
-            <code>pnpm start</code>
-          </p>
-          <p>
-            <code>pnpm build</code>
-          </p>
-          <p>
-            <code>pnpm lint:typecheck</code>
-          </p>
-          <p>
-            <code>pnpm typecheck</code>
-          </p>
+          {COMMANDS.map((command) => (
+            <p key={command}>
+              <code>{command}</code>
+            </p>
+          ))}
         </div>
       </section>
     </main>
   );
 }
-
-export default App;
