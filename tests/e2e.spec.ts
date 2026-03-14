@@ -2,6 +2,7 @@ import { expect, test as base, type Page } from "@playwright/test";
 import type { BrowserWindow } from "electron";
 import { _electron as electron, type ElectronApplication, type JSHandle } from "playwright";
 import { createHash } from "node:crypto";
+import { createElectronAppProfile } from "./support/electronAppProfile";
 
 type TestFixtures = {
   electronVersions: NodeJS.ProcessVersions;
@@ -16,8 +17,6 @@ type MainWindowState = {
 type WorkerFixtures = {
   electronApp: ElectronApplication;
 };
-
-process.env.PLAYWRIGHT_TEST = "true";
 
 async function getMainWindowState(
   electronApp: ElectronApplication,
@@ -45,13 +44,25 @@ async function getMainWindowState(
 
 const test = base.extend<TestFixtures, WorkerFixtures>({
   electronApp: [
-    async ({}, use) => {
+    async ({}, use, workerInfo) => {
+      const profile = await createElectronAppProfile(workerInfo.parallelIndex);
       const electronApp = await electron.launch({
         args: ["."],
+        env: {
+          ...process.env,
+          APP_LOGS_PATH: profile.logsPath,
+          APP_SESSION_DATA_PATH: profile.sessionDataPath,
+          APP_USER_DATA_PATH: profile.rootPath,
+          PLAYWRIGHT_TEST: "true",
+        },
       });
 
-      await use(electronApp);
-      await electronApp.close();
+      try {
+        await use(electronApp);
+      } finally {
+        await electronApp.close();
+        await profile.cleanup();
+      }
     },
     { auto: true, scope: "worker" },
   ],
@@ -78,7 +89,7 @@ test("Main window state", async ({ electronApp, page }) => {
 
 test.describe("Main window web content", () => {
   test("The main window has an interactive button", async ({ page }) => {
-    const element = page.getByRole("button", { name: "count is 0" });
+    const element = page.getByRole("button", { name: /count is \d+/ });
     await expect(element).toBeVisible();
     await expect(element).toHaveText("count is 0");
     await element.click();
