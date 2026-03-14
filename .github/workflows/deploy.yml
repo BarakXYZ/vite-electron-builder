@@ -34,9 +34,9 @@ jobs:
         uses: actions/download-artifact@v7
         with:
           pattern: "*-${{inputs.distribution-channel}}"
-          path: dist
+          path: apps/desktop/dist
           merge-multiple: true
 
-      - run: gh release create v${{inputs.app-version}} dist/root* dist/latest*.yml --repo ${{github.repository}}
+      - run: gh release create v${{inputs.app-version}} apps/desktop/dist/* --repo ${{github.repository}}
         env:
           GH_TOKEN: ${{ github.token }}

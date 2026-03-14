@@ -3,34 +3,34 @@
 >
 > If this template has been useful to you, please consider [supporting Ukraine](https://stand-with-ukraine.pp.ua/) or [supporting the original author](https://send.monobank.ua/6SmojkkR9i).
 
-![IMG_0875](https://github.com/user-attachments/assets/590de304-e2c4-4935-9814-c18ade52fd8e)
+![Template preview](https://github.com/user-attachments/assets/590de304-e2c4-4935-9814-c18ade52fd8e)
 
-# Vite Electron Builder Boilerplate
+# Electron XYZ Monorepo Template
 
-A production-ready Electron starter built on a workspace monorepo, Vite, React, Tailwind CSS v4, shadcn/ui, TSGo, Oxlint, Oxfmt, and Playwright.
+A production-ready Electron starter built for real monorepo growth.
 
-This fork keeps the original template's secure Electron foundation and upgrades the stack around it with stricter tooling, stronger UI primitives, explicit theme infrastructure, and cleaner process-oriented architecture.
+This fork keeps the secure Electron foundation of `vite-electron-builder`, but reorganizes the repo around a future-friendly `apps/*` + `packages/*` topology, adds Turborepo for task orchestration, and ships a modern desktop baseline with React, Tailwind CSS v4, shadcn/ui, TSGo, Oxlint, Oxfmt, and Playwright.
 
 ## What You Get
 
-- Electron with security-focused defaults and a process-first architecture.
-- A workspace monorepo using `pnpm` workspaces.
-- A default renderer built with Vite + React + Tailwind CSS v4.
-- Shared shadcn/ui primitives in a dedicated `packages/ui` package.
+- `apps/desktop` as an explicit desktop app workspace.
+- `packages/*` for reusable libraries, desktop internals, and tooling helpers.
+- Turborepo-powered `build`, `lint`, and `typecheck` workflows.
+- Electron with security-focused defaults and process-aware architecture.
+- React + Vite + Tailwind CSS v4 renderer baseline.
+- Shared shadcn/ui primitives in `packages/ui`.
 - Electron-native theme handling backed by `nativeTheme.themeSource`.
-- Detached DevTools window management with persisted geometry.
-- Fast TypeScript checks with TSGo.
-- Linting with Oxlint and formatting with Oxfmt.
-- Playwright end-to-end coverage for `light`, `dark`, and `system` theme modes.
-- Background-mode Playwright runs that avoid stealing OS focus during normal E2E work.
-- `electron-builder` packaging and release-friendly defaults.
+- Detached DevTools with persisted geometry and focus-safe behavior.
+- Playwright Electron coverage for `light`, `dark`, and `system` theme modes.
+- Configurable E2E window behavior for `hidden`, `background`, and `interactive` runs.
+- Electron Builder packaging wired for the monorepo layout.
 
 ## Requirements
 
 - Node.js `>=24.0.0`
 - `pnpm@10`
 
-This repo currently pins Node `24.14.0` in [`.prototools`](./.prototools). If you use Proto/Prototools, it will pick that version automatically.
+This repo currently pins Node `24.14.0` in [`.prototools`](./.prototools). If you use Proto/Prototools, that version is selected automatically.
 
 ## Quick Start
 
@@ -39,127 +39,68 @@ pnpm install
 pnpm start
 ```
 
-Build all workspaces:
+Common tasks:
 
 ```sh
 pnpm build
-```
-
-Run end-to-end tests:
-
-```sh
+pnpm lint
+pnpm typecheck
 pnpm test
-```
-
-Build a distributable app with `electron-builder`:
-
-```sh
 pnpm compile
 ```
 
-## Stack
+## Repo Topology
 
-### Runtime
-
-- [Electron](https://www.electronjs.org/)
-- [Vite](https://vite.dev/)
-- [React](https://react.dev/)
-- [Tailwind CSS v4](https://tailwindcss.com/docs/installation/using-vite)
-- [shadcn/ui](https://ui.shadcn.com/docs/installation/vite)
-
-### Tooling
-
-- [pnpm workspaces](https://pnpm.io/workspaces)
-- [Playwright](https://playwright.dev/docs/api/class-electron)
-- [Oxlint](https://oxc.rs/docs/guide/usage/linter/migrate-from-eslint)
-- [Oxfmt](https://oxc.rs/docs/guide/usage/formatter/migrate-from-prettier)
-- [`@typescript/native-preview` (TSGo)](https://www.npmjs.com/package/@typescript/native-preview)
-
-## Architecture
-
-This repo is organized around Electron process boundaries first, then feature boundaries inside each package.
+The workspace follows the Turborepo-recommended split between deployable apps and reusable packages.
 
 ```text
+apps/
+  desktop/
+    buildResources/
+    scripts/
+    tests/
+    types/
+    electron-builder.mjs
+    package.json
+    playwright.config.js
+
 packages/
-  main/       # Electron main process
-  preload/    # Electron preload bridge
-  renderer/   # Vite + React application
-  ui/         # Shared shadcn/ui components, hooks, styles
+  desktop-main/
+  desktop-preload/
+  desktop-renderer/
+  desktop-electron-versions/
+  desktop-integrate-renderer/
+  ui/
 ```
 
-Inside the app-facing packages, the code follows this pattern:
+### Why This Shape
 
-```text
-src/
-  app/        # bootstrap, composition, entry wiring
-  features/   # vertical feature slices
-```
+- `apps/*` contains product entrypoints and app-specific configuration.
+- `packages/*` contains reusable or app-internal libraries with explicit ownership.
+- Electron process boundaries stay clear inside the desktop app stack.
+- Web and mobile apps can be added later without rethinking the repo root.
 
-That gives us a structure that matches Electron's official process model while staying scalable as features grow.
+## Desktop Package Overview
 
-### Package Overview
+- [`apps/desktop`](./apps/desktop) - desktop app workspace, packaging config, scripts, Playwright suite, app-specific types.
+- [`packages/desktop-main`](./packages/desktop-main) - Electron main process orchestration, lifecycle, security, theme, windows, updates.
+- [`packages/desktop-preload`](./packages/desktop-preload) - explicit `contextBridge` surface and browser-safe preload shim exports.
+- [`packages/desktop-renderer`](./packages/desktop-renderer) - the React renderer app.
+- [`packages/desktop-electron-versions`](./packages/desktop-electron-versions) - Electron/Chrome/Node version helpers used by desktop tooling.
+- [`packages/desktop-integrate-renderer`](./packages/desktop-integrate-renderer) - helper scripts for replacing the bundled desktop renderer.
+- [`packages/ui`](./packages/ui) - shared shadcn/ui primitives, hooks, and styles.
 
-- [`packages/main`](./packages/main) - main-process orchestration, windows, theme state, security rules, updates, lifecycle.
-- [`packages/preload`](./packages/preload) - explicit `contextBridge` surface exposed to the renderer.
-- [`packages/renderer`](./packages/renderer) - the default desktop UI built with React.
-- [`packages/ui`](./packages/ui) - shared design-system package for shadcn/ui primitives and styles.
-- [`packages/electron-versions`](./packages/electron-versions) - Electron version helpers used by build config.
-- [`packages/integrate-renderer`](./packages/integrate-renderer) - helper package used when bootstrapping/replacing a renderer package.
+## Task Model
 
-## Development Workflow
+Turborepo is the default task graph for scalable workspace tasks.
 
-Start the dev environment:
-
-```sh
-pnpm start
-```
-
-This runs the Electron dev flow with hot reload.
-
-### Key Scripts
-
-```sh
-pnpm start
-```
-
-Run Electron in development mode.
+### Root Scripts
 
 ```sh
 pnpm build
 ```
 
-Build every workspace that exposes a `build` script.
-
-```sh
-pnpm test
-```
-
-Build the app and run Playwright Electron end-to-end tests using the checked-in E2E runtime config.
-
-```sh
-pnpm test:background
-```
-
-Build the app and force visible background-mode windows that do not steal focus.
-
-```sh
-pnpm test:interactive
-```
-
-Build the app and run the same Playwright suite with normal interactive window behavior.
-
-```sh
-pnpm compile
-```
-
-Build the app and package it with `electron-builder`.
-
-```sh
-pnpm fmt
-pnpm fmt:check
-```
-
-Format or verify formatting with Oxfmt.
+Runs `turbo run build` across packages that expose a `build` script.
 
 ```sh
 pnpm lint
@@ -167,38 +108,128 @@ pnpm lint:type-aware
 pnpm lint:typecheck
 ```
 
-Run Oxlint across:
-
-- `packages/main`
-- `packages/preload`
-- `packages/renderer`
-- `packages/ui`
-- `tests`
-
-`lint:type-aware` enables TypeScript-aware rules.
-
-`lint:typecheck` adds TypeScript diagnostics on top of type-aware linting.
+Runs Oxlint across all governed workspaces through Turbo.
 
 ```sh
 pnpm typecheck
 ```
 
-Run TSGo type checking in all workspaces that expose `typecheck`.
+Runs TSGo type checking across workspaces that expose `typecheck`.
+
+```sh
+pnpm start
+```
+
+Starts the desktop Electron development flow from `apps/desktop`.
+
+```sh
+pnpm test
+pnpm test:background
+pnpm test:hidden
+pnpm test:interactive
+```
+
+Runs the desktop Playwright suite using the configured E2E window mode.
+
+```sh
+pnpm compile
+```
+
+Packages the desktop app with Electron Builder.
+
+```sh
+pnpm fmt
+pnpm fmt:check
+```
+
+Formats or checks the repository with Oxfmt.
+
+## Turbo Integration
+
+Turbo is intentionally used where it brings the most value first:
+
+- `build`
+- `lint`
+- `lint:type-aware`
+- `lint:typecheck`
+- `typecheck`
+
+That gives the repo:
+
+- package-graph task ordering
+- local caching
+- a clean path to remote caching in CI
+- a stable foundation for future `apps/web` and `apps/mobile`
+
+Configuration lives in [`turbo.json`](./turbo.json).
+
+## Desktop Architecture
+
+Inside the desktop process packages, code is organized as:
+
+```text
+src/
+  app/        # bootstrap, composition, entry wiring
+  features/   # vertical slices by capability
+```
+
+This keeps Electron's process model intact while avoiding a flat `modules/` bucket.
+
+### Main Process
+
+Relevant code lives in [`packages/desktop-main/src`](./packages/desktop-main/src).
+
+Current slices include:
+
+- lifecycle
+- platform
+- security
+- testing presentation policies
+- theme
+- updates
+- windows
+
+### Preload Surface
+
+The preload bridge lives in [`packages/desktop-preload/src`](./packages/desktop-preload/src).
+
+The renderer consumes a single explicit bridge:
+
+```ts
+window.electronAPI;
+```
+
+Example capabilities:
+
+- `window.electronAPI.versions`
+- `window.electronAPI.sha256sum()`
+- `window.electronAPI.theme.getState()`
+- `window.electronAPI.theme.setThemeSource()`
+- `window.electronAPI.theme.subscribe()`
+
+This follows Electron's guidance to expose narrow preload APIs instead of generic IPC passthrough.
+
+### Renderer
+
+The default desktop UI lives in [`packages/desktop-renderer`](./packages/desktop-renderer).
+
+It ships with:
+
+- React
+- Vite
+- Tailwind CSS v4
+- shared shadcn/ui primitives from `packages/ui`
+- feature-sliced renderer code under `src/features`
 
 ## UI Workflow
 
-The default renderer already includes:
-
-- React
-- Tailwind CSS v4
-- shadcn/ui
-- a shared `packages/ui` package for reusable primitives
+The shared design system lives in [`packages/ui`](./packages/ui).
 
 ### shadcn/ui in a Monorepo
 
-This repo intentionally separates app-level blocks from shared primitives.
+This repo intentionally separates app-specific blocks from shared primitives.
 
-Add app-specific blocks/components to the renderer:
+Add app-specific blocks/components to the desktop renderer:
 
 ```sh
 pnpm shadcn:add:app sidebar-01
@@ -212,14 +243,12 @@ pnpm shadcn:add:ui button
 
 Configuration lives in:
 
-- [`packages/renderer/components.json`](./packages/renderer/components.json)
+- [`packages/desktop-renderer/components.json`](./packages/desktop-renderer/components.json)
 - [`packages/ui/components.json`](./packages/ui/components.json)
-
-The setup follows the official Vite, monorepo, and dark-mode guidance from shadcn/ui.
 
 ## Theme System
 
-Theme is handled as an Electron feature, not as an ad hoc renderer toggle.
+Theme is implemented as a real Electron feature rather than a renderer-local toggle.
 
 ### Source of Truth
 
@@ -229,27 +258,26 @@ The source of truth is Electron's [`nativeTheme.themeSource`](https://www.electr
 - `dark`
 - `system`
 
-The main process owns theme state, persists the user's preference, and broadcasts changes to renderer windows.
+The main process owns theme state, persists user preference, and broadcasts updates to renderer windows.
 
 Relevant code:
 
-- [`packages/main/src/features/theme`](./packages/main/src/features/theme)
-- [`packages/preload/src/features/theme/theme.ts`](./packages/preload/src/features/theme/theme.ts)
-- [`packages/renderer/src/features/theme/electronThemeController.ts`](./packages/renderer/src/features/theme/electronThemeController.ts)
+- [`packages/desktop-main/src/features/theme`](./packages/desktop-main/src/features/theme)
+- [`packages/desktop-preload/src/features/theme/theme.ts`](./packages/desktop-preload/src/features/theme/theme.ts)
+- [`packages/desktop-renderer/src/features/theme/electronThemeController.ts`](./packages/desktop-renderer/src/features/theme/electronThemeController.ts)
 - [`packages/ui/src/components/theme-provider.tsx`](./packages/ui/src/components/theme-provider.tsx)
 
-### Why This Pattern
+### Startup Flash Prevention
 
-This matches Electron's official guidance better than relying only on `localStorage` and `matchMedia()` in the renderer:
+The desktop template also handles early theme paint correctly:
 
-- main process owns native app theme state
-- preload exposes a narrow API surface
-- renderer consumes an explicit theme controller
-- tests can validate explicit and system theme behavior consistently
+- native `BrowserWindow.backgroundColor` is set from the resolved theme
+- the renderer document seeds its initial background before React mounts
+- runtime theme sync happens through the normal provider/controller path
 
 ## Testing
 
-Playwright tests live in [`tests`](./tests) and run against the compiled Electron app.
+The Playwright suite lives in [`apps/desktop/tests`](./apps/desktop/tests) and runs against the real Electron app.
 
 Current project matrix:
 
@@ -257,17 +285,10 @@ Current project matrix:
 - `electron-dark`
 - `electron-system`
 
-That means the suite verifies:
-
-- explicit light override behavior
-- explicit dark override behavior
-- true system-mode behavior
-- renderer/media/theme-state consistency
-
-The suite is organized by responsibility instead of a single monolithic spec:
+The suite is organized by responsibility:
 
 ```text
-tests/
+apps/desktop/tests/
   e2e/
     app-shell.spec.ts
     preload-api.spec.ts
@@ -280,111 +301,55 @@ tests/
     theme.ts
   support/
     electronAppProfile.ts
+    e2eRuntimeConfig.js
 ```
 
-That layout follows Playwright's fixture and project model:
+### E2E Window Modes
 
-- shared Electron launch logic lives in reusable fixtures
-- repeated assertions stay in helper modules
-- spec files stay focused on one behavior area each
+Desktop E2E behavior is controlled in:
 
-Run all projects:
+- [`apps/desktop/tests/e2e.runtime.config.js`](./apps/desktop/tests/e2e.runtime.config.js)
 
-```sh
-pnpm test
-```
+Available modes:
 
-Default E2E runtime behavior is controlled from:
+- `hidden` - keep the app off-screen while tests run
+- `background` - show the app without stealing OS focus
+- `interactive` - show and focus the app normally for debugging
 
-- [`tests/e2e.runtime.config.js`](./tests/e2e.runtime.config.js)
-
-Current modes:
-
-- `hidden` - keep app windows hidden while tests run
-- `background` - show windows without stealing OS focus
-- `interactive` - show and focus windows normally for debugging
-
-The checked-in default is `hidden`, so routine `pnpm test` runs stay out of your way while you work.
-
-Run a single project:
+Examples:
 
 ```sh
 pnpm test -- --project electron-dark
-```
-
-Temporarily force visible background-mode windows:
-
-```sh
 pnpm test:background -- --project electron-dark
-```
-
-Opt into normal interactive windows when debugging locally:
-
-```sh
 pnpm test:interactive -- --project electron-dark
 ```
 
-Playwright configuration lives in [`playwright.config.js`](./playwright.config.js).
-
-## Main / Preload / Renderer Contract
-
-This repo favors a narrow, explicit preload bridge in line with Electron's security guidance.
-
-The exposed bridge is available as:
-
-```ts
-window.electronAPI;
-```
-
-Example capabilities currently include:
-
-- `window.electronAPI.versions`
-- `window.electronAPI.sha256sum()`
-- `window.electronAPI.theme.getState()`
-- `window.electronAPI.theme.setThemeSource()`
-- `window.electronAPI.theme.subscribe()`
-
-For simple exported preload functions, the repo also generates a renderer-safe browser shim so explicit exports can still be consumed from `@app/preload` where appropriate.
-
-### Example
-
-```ts
-const themeState = await window.electronAPI.theme.getState();
-
-await window.electronAPI.theme.setThemeSource("dark");
-```
-
-If you need new native capabilities:
-
-1. add a main-process feature or IPC handler
-2. expose a narrow preload method
-3. consume it from the renderer
-4. add Playwright coverage when the capability affects behavior
+Playwright configuration lives in [`apps/desktop/playwright.config.js`](./apps/desktop/playwright.config.js).
 
 ## Security Defaults
 
-This template keeps Electron security as a first-class concern.
+The template keeps Electron security as a first-class concern.
 
 Current defaults include:
 
 - `contextIsolation: true`
 - `nodeIntegration: false`
 - permission requests denied by default
-- external URL handling constrained in main
-- renderer CSP in `index.html`
 - explicit preload bridge instead of generic IPC passthrough
+- renderer CSP in the desktop HTML entrypoint
+- constrained external URL handling in main
 
 Relevant code:
 
-- [`packages/main/src/features/security`](./packages/main/src/features/security)
-- [`packages/preload/src/app/exposeElectronApi.ts`](./packages/preload/src/app/exposeElectronApi.ts)
+- [`packages/desktop-main/src/features/security`](./packages/desktop-main/src/features/security)
+- [`packages/desktop-preload/src/app/exposeElectronApi.ts`](./packages/desktop-preload/src/app/exposeElectronApi.ts)
 
 > [!NOTE]
-> The default `BrowserWindow` still uses `sandbox: false` because the starter preload currently depends on Node-capable APIs. If you remove that dependency, enabling sandboxing is the next recommended hardening step according to Electron's security guidance.
+> The default `BrowserWindow` still uses `sandbox: false` because the starter preload depends on Node-capable APIs. If you remove that dependency, enabling sandboxing is the next recommended hardening step.
 
 ## DevTools Behavior
 
-The dev template includes a detached DevTools implementation that avoids the common focus and persistence problems.
+The desktop template includes a detached DevTools implementation that avoids the common focus and persistence issues.
 
 It currently:
 
@@ -395,42 +360,35 @@ It currently:
 
 Relevant code:
 
-- [`packages/main/src/features/windows/devtools`](./packages/main/src/features/windows/devtools)
+- [`packages/desktop-main/src/features/windows/devtools`](./packages/desktop-main/src/features/windows/devtools)
 
-## Packaging and Distribution
+## Packaging
 
-This repo uses [`electron-builder`](https://www.electron.build/) for packaging.
-
-Build a distributable app:
+Desktop packaging uses [`electron-builder`](https://www.electron.build/) from the app workspace.
 
 ```sh
 pnpm compile
 ```
 
-Build unpacked output for inspection/debugging:
+Configuration lives in [`apps/desktop/electron-builder.mjs`](./apps/desktop/electron-builder.mjs).
 
-```sh
-pnpm compile -- --dir -c.asar=false
-```
+Build resources live in [`apps/desktop/buildResources`](./apps/desktop/buildResources).
 
-The builder configuration lives in [`electron-builder.mjs`](./electron-builder.mjs).
+## Replacing the Desktop Renderer
 
-## Replacing the Renderer
-
-If you want to replace the bundled renderer package entirely:
+If you want to replace the bundled desktop renderer package entirely:
 
 ```sh
 pnpm run init
 ```
 
-This uses the helper scripts in [`packages/integrate-renderer`](./packages/integrate-renderer).
-
-## Contributing
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md).
+This uses the helper scripts in [`packages/desktop-integrate-renderer`](./packages/desktop-integrate-renderer).
 
 ## References
 
+- [Turborepo getting started](https://turborepo.com/docs/getting-started)
+- [Turborepo running tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
+- [Turborepo caching](https://turborepo.com/docs/core-concepts/caching)
 - [Electron process model](https://www.electronjs.org/docs/latest/tutorial/process-model)
 - [Electron security tutorial](https://www.electronjs.org/docs/latest/tutorial/security)
 - [Electron context isolation](https://www.electronjs.org/docs/latest/tutorial/context-isolation)

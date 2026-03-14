@@ -59,7 +59,8 @@ jobs:
         with:
           renderer-template: ${{inputs.renderer-template}}
 
-      - run: pnpm version "${{inputs.app-version}}" --no-git-tag-version
+      - run: |
+          node -e "const fs=require('node:fs');const path='apps/desktop/package.json';const pkg=JSON.parse(fs.readFileSync(path,'utf8'));pkg.version=process.argv[1];fs.writeFileSync(path,JSON.stringify(pkg,null,2)+'\n');" "${{inputs.app-version}}"
       - run: pnpm run compile -- -p never
         env:
           VITE_DISTRIBUTION_CHANNEL: ${{inputs.distribution-channel}}
@@ -72,10 +73,10 @@ jobs:
 
       - uses: actions/attest-build-provenance@v3
         with:
-          subject-path: "dist/root*, dist/latest*.yml"
+          subject-path: "apps/desktop/dist/**"
 
       - name: Upload compiled app
         uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.os }}-${{inputs.distribution-channel}}
-          path: dist
+          path: apps/desktop/dist
