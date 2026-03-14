@@ -146,19 +146,30 @@ Formats or checks the repository with Oxfmt.
 
 ## Turbo Integration
 
-Turbo is intentionally used where it brings the most value first:
+Turbo is the default workspace task graph for this repository.
+
+Today it governs:
 
 - `build`
+- `compile`
+- `dev`
 - `lint`
 - `lint:type-aware`
 - `lint:typecheck`
+- `test`
+- `test:background`
+- `test:hidden`
+- `test:interactive`
 - `typecheck`
 
 That gives the repo:
 
 - package-graph task ordering
-- local caching
-- a clean path to remote caching in CI
+- local caching for deterministic build and analysis tasks
+- non-cached persistent handling for long-running desktop development
+- non-cached orchestration for Electron packaging and Playwright E2E flows
+- affected-only execution in CI when Turbo has an SCM base to compare against
+- a clean path to remote caching in CI via `TURBO_TEAM` and `TURBO_TOKEN`
 - a stable foundation for future `apps/web` and `apps/mobile`
 
 Configuration lives in [`turbo.json`](./turbo.json).
