@@ -296,7 +296,7 @@ pnpm test
 
 Default E2E runtime behavior is controlled from:
 
-- [`tests/e2e.runtime.config.json`](./tests/e2e.runtime.config.json)
+- [`tests/e2e.runtime.config.js`](./tests/e2e.runtime.config.js)
 
 Current modes:
 
