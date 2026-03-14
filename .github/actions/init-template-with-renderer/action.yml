@@ -26,7 +26,7 @@ runs:
     - name: Check if renderer directory exists
       id: check-renderer
       run: >-
-        if [ -d "packages/renderer" ]; then
+        if [ -d "packages/desktop-renderer" ]; then
           echo "RENDERER_EXIST=true" >> $GITHUB_OUTPUT
         else
           echo "RENDERER_EXIST=false" >> $GITHUB_OUTPUT
@@ -35,7 +35,7 @@ runs:
 
     - run: |
         pnpm run create-renderer -- -- --template ${{inputs.renderer-template}}
-        pnpm --filter @app/integrate-renderer start
+        pnpm run integrate-renderer
       shell: bash
       if: inputs.renderer-template != '' && steps.check-renderer.outputs.RENDERER_EXIST == 'false'
 

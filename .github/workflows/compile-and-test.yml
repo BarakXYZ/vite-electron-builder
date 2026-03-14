@@ -3,6 +3,13 @@ name: Compile and test
 on:
   workflow_call:
     inputs:
+      desktop-affected:
+        required: true
+        type: string
+      turbo-scm-base:
+        required: false
+        type: string
+        default: ""
       renderer-template:
         description: Define what vite template should be used to create renderer in case if renderer package doesn't exist
         required: false
@@ -27,23 +34,37 @@ permissions:
 env:
   NODE_NO_WARNINGS: 1
   PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+  TURBO_TELEMETRY_DISABLED: 1
   npm_config_audit: false
   npm_config_fund: false
 
 jobs:
-  typeckeck:
+  quality:
     runs-on: ubuntu-latest
+    env:
+      TURBO_SCM_BASE: ${{ inputs.turbo-scm-base }}
+      TURBO_SCM_HEAD: ${{ github.sha }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
       - uses: ./.github/actions/init-template-with-renderer
         name: Setup boilerplate
         with:
           renderer-template: ${{inputs.renderer-template}}
       - run: pnpm run fmt:check --if-present
-      - run: pnpm run lint --if-present
-      - run: pnpm run typecheck --if-present
+      - run: |
+          command=(pnpm exec turbo run lint lint:root typecheck)
+          if [[ -n "${TURBO_SCM_BASE:-}" ]]; then
+            command+=(--affected)
+          fi
+
+          "${command[@]}"
 
   compile:
+    if: inputs.desktop-affected == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -52,8 +73,13 @@ jobs:
           - ubuntu-latest
           - macos-latest
     runs-on: ${{ matrix.os }}
+    env:
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
       - uses: ./.github/actions/init-template-with-renderer
         name: Setup boilerplate
         with:

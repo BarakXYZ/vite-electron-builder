@@ -23,6 +23,9 @@ permissions:
   id-token: write
   attestations: write
 
+env:
+  TURBO_TELEMETRY_DISABLED: 1
+
 jobs:
   prepare:
     name: Prepare shared data for multi-platform compilation
@@ -30,18 +33,50 @@ jobs:
     outputs:
       APP_VERSION: ${{ steps.APP_VERSION.outputs.APP_VERSION }}
       COMMIT_TIMESTAMP: ${{ steps.COMMIT_TIMESTAMP.outputs.COMMIT_TIMESTAMP }}
+      DESKTOP_AFFECTED: ${{ steps.DESKTOP_AFFECTED.outputs.DESKTOP_AFFECTED }}
       APP_FULL_VERSION: ${{ steps.APP_FULL_VERSION.outputs.APP_FULL_VERSION }}
+      TURBO_SCM_BASE: ${{ steps.TURBO_SCM.outputs.TURBO_SCM_BASE }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/init-template-with-renderer
+        name: Setup boilerplate
+        with:
+          renderer-template: ${{inputs.renderer-template}}
       - id: COMMIT_TIMESTAMP
         run: echo "COMMIT_TIMESTAMP=$(git show -s --format=%ct ${{ github.sha }})" >> $GITHUB_OUTPUT
       - id: APP_VERSION
         run: echo "APP_VERSION=$(jq -r .version apps/desktop/package.json)" >> $GITHUB_OUTPUT
+      - id: TURBO_SCM
+        run: |
+          if [[ "${GITHUB_EVENT_NAME}" == "pull_request" ]]; then
+            echo "TURBO_SCM_BASE=origin/${GITHUB_BASE_REF}" >> "$GITHUB_OUTPUT"
+          elif [[ -n "${{ github.event.before }}" && "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]]; then
+            echo "TURBO_SCM_BASE=${{ github.event.before }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "TURBO_SCM_BASE=" >> "$GITHUB_OUTPUT"
+          fi
+      - id: DESKTOP_AFFECTED
+        env:
+          TURBO_SCM_BASE: ${{ steps.TURBO_SCM.outputs.TURBO_SCM_BASE }}
+          TURBO_SCM_HEAD: ${{ github.sha }}
+        run: |
+          if [[ -n "${TURBO_SCM_BASE:-}" ]]; then
+            affected_json="$(pnpm exec turbo ls @app/desktop --affected --output=json)"
+            desktop_affected="$(node -e 'const result = JSON.parse(process.argv[1]); const packages = Array.isArray(result.packages) ? result.packages : []; process.stdout.write(String(packages.length > 0));' "$affected_json")"
+          else
+            desktop_affected="true"
+          fi
+
+          echo "DESKTOP_AFFECTED=${desktop_affected}" >> "$GITHUB_OUTPUT"
       - id: APP_FULL_VERSION
         run: echo "APP_FULL_VERSION=${{ steps.APP_VERSION.outputs.APP_VERSION }}-${{inputs.distribution-channel}}.${{ steps.COMMIT_TIMESTAMP.outputs.COMMIT_TIMESTAMP }}" >> $GITHUB_OUTPUT
       - run: |
           echo "- \`COMMIT_TIMESTAMP\`: ${{ steps.COMMIT_TIMESTAMP.outputs.COMMIT_TIMESTAMP }}" >> $GITHUB_STEP_SUMMARY
           echo "- \`APP_VERSION\`: ${{ steps.APP_VERSION.outputs.APP_VERSION }}" >> $GITHUB_STEP_SUMMARY
+          echo "- \`TURBO_SCM_BASE\`: ${{ steps.TURBO_SCM.outputs.TURBO_SCM_BASE || 'full-run' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- \`DESKTOP_AFFECTED\`: ${{ steps.DESKTOP_AFFECTED.outputs.DESKTOP_AFFECTED }}" >> $GITHUB_STEP_SUMMARY
           echo "- \`APP_FULL_VERSION\`: ${{ steps.APP_FULL_VERSION.outputs.APP_FULL_VERSION }}" >> $GITHUB_STEP_SUMMARY
 
   compile-and-test:
@@ -52,19 +87,23 @@ jobs:
       id-token: write
       attestations: write
     uses: ./.github/workflows/compile-and-test.yml
+    secrets: inherit
     with:
+      desktop-affected: ${{ needs.prepare.outputs.DESKTOP_AFFECTED }}
       renderer-template: ${{ inputs.renderer-template }}
       app-version: ${{ needs.prepare.outputs.APP_FULL_VERSION }}
       distribution-channel: ${{inputs.distribution-channel}}
+      turbo-scm-base: ${{ needs.prepare.outputs.TURBO_SCM_BASE }}
 
   deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.prepare.outputs.DESKTOP_AFFECTED == 'true'
     permissions:
       contents: write
     needs:
       - prepare
       - compile-and-test
     uses: ./.github/workflows/deploy.yml
+    secrets: inherit
     with:
-      distribution-channel: ${{ inputs.renderer-template }}
+      distribution-channel: ${{ inputs.distribution-channel }}
       app-version: ${{ needs.prepare.outputs.APP_FULL_VERSION }}
