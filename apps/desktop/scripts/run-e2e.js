@@ -74,11 +74,6 @@ const environment = {
   APP_E2E_WINDOW_MODE: runtimeConfig.windowMode,
 };
 
-const buildExitCode = await run(pnpmCommand, ["run", "build:packages"], environment);
-if (buildExitCode !== 0) {
-  process.exit(buildExitCode);
-}
-
 const testExitCode = await run(
   pnpmCommand,
   ["exec", "playwright", "test", "--config", "./playwright.config.js", ...playwrightArguments],

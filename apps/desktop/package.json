@@ -11,10 +11,9 @@
   "type": "module",
   "main": "./scripts/entry-point.mjs",
   "scripts": {
-    "build:packages": "pnpm --filter @app/desktop-main --filter @app/desktop-preload --filter @app/desktop-renderer --if-present run build",
     "clean:dist": "node -e \"require('node:fs').rmSync('dist',{ force:true, recursive:true })\"",
     "compile": "pnpm run clean:dist && pnpm --dir ../.. exec electron-builder build --projectDir ./apps/desktop --config ./electron-builder.mjs",
-    "dev": "node ./scripts/dev-mode.js",
+    "dev": "node ./scripts/dev-runtime.js",
     "lint": "oxlint electron-builder.mjs playwright.config.js scripts tests types/preload-api.d.ts --config ../../oxlint.desktop.config.ts",
     "lint:fix": "oxlint electron-builder.mjs playwright.config.js scripts tests types/preload-api.d.ts --config ../../oxlint.desktop.config.ts --fix",
     "lint:type-aware": "oxlint electron-builder.mjs playwright.config.js scripts tests types/preload-api.d.ts --config ../../oxlint.desktop.config.ts --type-aware",

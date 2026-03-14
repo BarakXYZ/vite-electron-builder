@@ -9,27 +9,37 @@
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "outputs": [],
+      "persistent": true,
+      "with": ["@app/desktop-renderer#dev", "@app/desktop-main#dev", "@app/desktop-preload#dev"]
     },
     "test": {
       "cache": false,
+      "dependsOn": ["^build"],
       "env": ["APP_E2E_WINDOW_MODE", "CI"],
-      "outputs": []
+      "outputs": [],
+      "passThroughEnv": ["PLAYWRIGHT_*"]
     },
     "test:background": {
       "cache": false,
+      "dependsOn": ["^build"],
       "env": ["APP_E2E_WINDOW_MODE", "CI"],
-      "outputs": []
+      "outputs": [],
+      "passThroughEnv": ["PLAYWRIGHT_*"]
     },
     "test:hidden": {
       "cache": false,
+      "dependsOn": ["^build"],
       "env": ["APP_E2E_WINDOW_MODE", "CI"],
-      "outputs": []
+      "outputs": [],
+      "passThroughEnv": ["PLAYWRIGHT_*"]
     },
     "test:interactive": {
       "cache": false,
+      "dependsOn": ["^build"],
       "env": ["APP_E2E_WINDOW_MODE", "CI"],
-      "outputs": []
+      "outputs": [],
+      "passThroughEnv": ["PLAYWRIGHT_*"]
     }
   }
 }

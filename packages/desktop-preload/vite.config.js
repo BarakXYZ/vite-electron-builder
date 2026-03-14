@@ -1,4 +1,5 @@
 import { getChromeMajorVersion } from "@app/desktop-electron-versions";
+import { writeBuildTaskState } from "../../apps/desktop/scripts/dev/buildTaskState.js";
 import { resolveModuleExportNames } from "mlly";
 
 const ELECTRON_API_KEY = "electronAPI";
@@ -60,23 +61,15 @@ function mockBrowserPreloadApi() {
 }
 
 function handleHotReload() {
-  let rendererWatchServer = null;
+  let isDevelopment = false;
 
   return {
-    config(config, env) {
+    config(_config, env) {
       if (env.mode !== "development") {
         return;
       }
 
-      const rendererWatchServerProvider = config.plugins.find(
-        (plugin) => plugin.name === "@app/desktop-renderer-watch-server-provider",
-      );
-      if (!rendererWatchServerProvider) {
-        throw new Error("Renderer watch server provider not found");
-      }
-
-      rendererWatchServer = rendererWatchServerProvider.api.provideRendererWatchServer();
-
+      isDevelopment = true;
       return {
         build: {
           watch: {},
@@ -84,14 +77,12 @@ function handleHotReload() {
       };
     },
     name: "@app/desktop-preload-process-hot-reload",
-    writeBundle() {
-      if (!rendererWatchServer) {
+    async writeBundle() {
+      if (!isDevelopment) {
         return;
       }
 
-      rendererWatchServer.ws.send({
-        type: "full-reload",
-      });
+      await writeBuildTaskState("desktop-preload");
     },
   };
 }

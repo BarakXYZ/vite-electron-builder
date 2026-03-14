@@ -167,7 +167,9 @@ Shared defaults live in [`turbo.json`](./turbo.json).
 Package-specific task policy lives next to the package when behavior is app-specific:
 
 - [`apps/desktop/turbo.json`](./apps/desktop/turbo.json) for desktop-only `dev` / `compile` / `test*`
-- [`packages/desktop-main/turbo.json`](./packages/desktop-main/turbo.json) for desktop-main build env hashing
+- [`packages/desktop-main/turbo.json`](./packages/desktop-main/turbo.json) for desktop-main build env hashing and dev watch policy
+- [`packages/desktop-preload/turbo.json`](./packages/desktop-preload/turbo.json) for preload dev watch policy
+- [`packages/desktop-renderer/turbo.json`](./packages/desktop-renderer/turbo.json) for renderer dev-server policy
 
 That gives the repo:
 
@@ -178,6 +180,12 @@ That gives the repo:
 - affected-only execution in CI when Turbo has an SCM base to compare against
 - a clean path to remote caching in CI via `TURBO_TEAM` and `TURBO_TOKEN`
 - a stable foundation for future `apps/web` and `apps/mobile`
+
+The desktop development flow now follows the same graph-aware model:
+
+- `@app/desktop-renderer#dev` runs the Vite renderer server and publishes its resolved URL to the app workspace
+- `@app/desktop-main#dev` and `@app/desktop-preload#dev` run watch builds
+- `@app/desktop#dev` owns only the Electron runtime process and composes the companion tasks with Turbo `with`
 
 ### Remote Cache Onboarding
 
