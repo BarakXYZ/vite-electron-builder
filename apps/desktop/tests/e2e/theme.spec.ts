@@ -1,6 +1,6 @@
-import { expect, test } from "../fixtures/electron";
-import { getMainWindowState } from "../helpers/mainWindow";
-import { getThemeSnapshot, RESOLVED_THEME_BACKGROUNDS } from "../helpers/theme";
+import { expect, test } from "../fixtures/electron.js";
+import { getMainWindowState } from "../helpers/mainWindow.js";
+import { getThemeSnapshot, RESOLVED_THEME_BACKGROUNDS } from "../helpers/theme.js";
 
 test("main window resolves the configured theme project", async ({ page, themeSource }) => {
   const themeSnapshot = await getThemeSnapshot(page);

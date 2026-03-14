@@ -1,4 +1,4 @@
-import { expect, test } from "../fixtures/electron";
+import { expect, test } from "../fixtures/electron.js";
 
 test("main window has an interactive counter button", async ({ page }) => {
   const element = page.getByRole("button", { name: /count is \d+/ });

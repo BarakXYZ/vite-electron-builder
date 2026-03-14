@@ -17,12 +17,12 @@
     }
   },
   "scripts": {
-    "build": "vite build",
-    "dev": "vite build --mode development",
-    "lint": "oxlint src vite.config.js --config ../../oxlint.config.ts",
-    "lint:fix": "oxlint src vite.config.js --config ../../oxlint.config.ts --fix",
-    "lint:type-aware": "oxlint src vite.config.js --config ../../oxlint.config.ts --type-aware",
-    "lint:typecheck": "oxlint src vite.config.js --config ../../oxlint.config.ts --type-aware --type-check",
+    "build": "vite build --configLoader runner",
+    "dev": "vite build --mode development --configLoader runner",
+    "lint": "oxlint src vite.config.ts --config ../../oxlint.config.ts",
+    "lint:fix": "oxlint src vite.config.ts --config ../../oxlint.config.ts --fix",
+    "lint:type-aware": "oxlint src vite.config.ts --config ../../oxlint.config.ts --type-aware",
+    "lint:typecheck": "oxlint src vite.config.ts --config ../../oxlint.config.ts --type-aware --type-check",
     "typecheck": "tsgo --noEmit"
   },
   "devDependencies": {

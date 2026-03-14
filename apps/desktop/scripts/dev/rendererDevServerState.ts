@@ -8,35 +8,34 @@ const stateFilePath = resolve(stateDirectoryPath, "renderer-dev-server.json");
 const defaultPollIntervalMs = 100;
 const defaultTimeoutMs = 30_000;
 
-/**
- * @param {string} url
- */
-function assertRendererDevServerUrl(url) {
-  if (typeof url !== "string" || url.length === 0) {
+type RendererDevServerState = {
+  url: string;
+};
+
+type WaitForRendererDevServerUrlOptions = {
+  pollIntervalMs?: number;
+  timeoutMs?: number;
+};
+
+function assertRendererDevServerUrl(url: string): void {
+  if (url.length === 0) {
     throw new TypeError("Renderer dev server URL must be a non-empty string.");
   }
 
   new URL(url);
 }
 
-/**
- * @param {number} milliseconds
- */
-function delay(milliseconds) {
+function delay(milliseconds: number): Promise<void> {
   return new Promise((resolvePromise) => {
     setTimeout(resolvePromise, milliseconds);
   });
 }
 
-async function ensureStateDirectory() {
+async function ensureStateDirectory(): Promise<void> {
   await mkdir(stateDirectoryPath, { recursive: true });
 }
 
-/**
- * @param {string} url
- * @returns {Promise<boolean>}
- */
-async function isReachableRendererDevServerUrl(url) {
+async function isReachableRendererDevServerUrl(url: string): Promise<boolean> {
   try {
     const response = await fetch(url, {
       signal: AbortSignal.timeout(1000),
@@ -48,9 +47,9 @@ async function isReachableRendererDevServerUrl(url) {
   }
 }
 
-async function readStateFile() {
+async function readStateFile(): Promise<RendererDevServerState | null> {
   try {
-    return JSON.parse(await readFile(stateFilePath, "utf8"));
+    return JSON.parse(await readFile(stateFilePath, "utf8")) as RendererDevServerState;
   } catch (error) {
     if (
       error &&
@@ -65,12 +64,9 @@ async function readStateFile() {
   }
 }
 
-/**
- * @returns {Promise<string | null>}
- */
-export async function loadRendererDevServerUrl() {
+export async function loadRendererDevServerUrl(): Promise<string | null> {
   const state = await readStateFile();
-  if (!state || typeof state.url !== "string") {
+  if (!state) {
     return null;
   }
 
@@ -78,24 +74,20 @@ export async function loadRendererDevServerUrl() {
   return state.url;
 }
 
-/**
- * @param {string} url
- */
-export async function writeRendererDevServerUrl(url) {
+export async function writeRendererDevServerUrl(url: string): Promise<void> {
   assertRendererDevServerUrl(url);
   await ensureStateDirectory();
-  await writeFile(stateFilePath, `${JSON.stringify({ url }, null, 2)}\n`, "utf8");
+  const rendererDevServerState: RendererDevServerState = { url };
+  await writeFile(stateFilePath, `${JSON.stringify(rendererDevServerState, null, 2)}\n`, "utf8");
 }
 
-export async function clearRendererDevServerUrl() {
+export async function clearRendererDevServerUrl(): Promise<void> {
   await rm(stateFilePath, { force: true });
 }
 
-/**
- * @param {{ pollIntervalMs?: number; timeoutMs?: number }} [options]
- * @returns {Promise<string>}
- */
-export async function waitForRendererDevServerUrl(options = {}) {
+export async function waitForRendererDevServerUrl(
+  options: WaitForRendererDevServerUrlOptions = {},
+): Promise<string> {
   const { pollIntervalMs = defaultPollIntervalMs, timeoutMs = defaultTimeoutMs } = options;
   const startTime = Date.now();
 

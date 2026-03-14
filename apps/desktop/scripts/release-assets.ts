@@ -4,15 +4,23 @@ import { basename, join, resolve } from "node:path";
 const IGNORED_FILE_NAMES = new Set(["builder-debug.yml"]);
 const [command, sourceDirectoryArg, targetDirectoryArg] = process.argv.slice(2);
 
+type ReleaseAssetsCommand = "print" | "stage";
+
 if (!command || !sourceDirectoryArg) {
   throw new Error(
-    "Usage: node release-assets.mjs <print|stage> <source-directory> [target-directory]",
+    "Usage: tsx release-assets.ts <print|stage> <source-directory> [target-directory]",
   );
 }
 
 const sourceDirectoryPath = resolve(sourceDirectoryArg);
 
-switch (command) {
+if (command !== "print" && command !== "stage") {
+  throw new Error(`Unsupported release-assets command: ${command}`);
+}
+
+const releaseAssetsCommand: ReleaseAssetsCommand = command;
+
+switch (releaseAssetsCommand) {
   case "print": {
     for (const releaseAssetPath of collectReleaseAssetPaths(sourceDirectoryPath)) {
       process.stdout.write(`${releaseAssetPath}\n`);
@@ -30,19 +38,16 @@ switch (command) {
     stageReleaseAssets(sourceDirectoryPath, targetDirectoryPath);
     break;
   }
-
-  default:
-    throw new Error(`Unsupported release-assets command: ${command}`);
 }
 
-function collectReleaseAssetPaths(sourceDirectoryPath) {
+function collectReleaseAssetPaths(sourceDirectoryPath: string): Array<string> {
   return readdirSync(sourceDirectoryPath, { withFileTypes: true })
     .filter((entry) => entry.isFile() && !IGNORED_FILE_NAMES.has(entry.name))
     .map((entry) => join(sourceDirectoryPath, entry.name))
     .sort((leftPath, rightPath) => leftPath.localeCompare(rightPath));
 }
 
-function stageReleaseAssets(sourceDirectoryPath, targetDirectoryPath) {
+function stageReleaseAssets(sourceDirectoryPath: string, targetDirectoryPath: string): void {
   const releaseAssetPaths = collectReleaseAssetPaths(sourceDirectoryPath);
   if (releaseAssetPaths.length === 0) {
     throw new Error(`No release assets were found in ${sourceDirectoryPath}.`);

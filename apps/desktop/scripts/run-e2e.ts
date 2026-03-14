@@ -1,35 +1,40 @@
 import { spawn } from "node:child_process";
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { loadE2ERuntimeConfig } from "../tests/support/e2eRuntimeConfig.js";
+import { loadE2ERuntimeConfig, type E2EWindowMode } from "../tests/support/e2eRuntimeConfig.js";
 
-const VALID_WINDOW_MODES = new Set(["hidden", "background", "interactive"]);
+const VALID_WINDOW_MODES = new Set<E2EWindowMode>(["hidden", "background", "interactive"]);
 const appRootPath = dirname(fileURLToPath(new URL("../package.json", import.meta.url)));
 
-function getPnpmCommand() {
+type ParsedArguments = {
+  playwrightArguments: Array<string>;
+  windowModeOverride: E2EWindowMode | undefined;
+};
+
+function getPnpmCommand(): string {
   return process.platform === "win32" ? "pnpm.cmd" : "pnpm";
 }
 
-function parseArguments(argv) {
-  const playwrightArguments = [];
-  let windowModeOverride;
+function parseArguments(argv: Array<string>): ParsedArguments {
+  const playwrightArguments: Array<string> = [];
+  let windowModeOverride: E2EWindowMode | undefined;
 
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index];
 
-    if (argument === "--") {
+    if (!argument || argument === "--") {
       continue;
     }
 
     if (argument === "--window-mode") {
       const nextValue = argv[index + 1];
-      if (!VALID_WINDOW_MODES.has(nextValue)) {
+      if (!nextValue || !VALID_WINDOW_MODES.has(nextValue as E2EWindowMode)) {
         throw new TypeError(
           `Invalid --window-mode value: ${String(nextValue)}. Expected one of ${Array.from(VALID_WINDOW_MODES).join(", ")}.`,
         );
       }
 
-      windowModeOverride = nextValue;
+      windowModeOverride = nextValue as E2EWindowMode;
       index += 1;
       continue;
     }
@@ -43,7 +48,11 @@ function parseArguments(argv) {
   };
 }
 
-function run(command, args, environment) {
+function run(
+  command: string,
+  args: Array<string>,
+  environment: NodeJS.ProcessEnv,
+): Promise<number> {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
       cwd: appRootPath,
@@ -69,14 +78,14 @@ const runtimeConfig = await loadE2ERuntimeConfig({
   environment: process.env,
   windowModeOverride,
 });
-const environment = {
+const environment: NodeJS.ProcessEnv = {
   ...process.env,
   APP_E2E_WINDOW_MODE: runtimeConfig.windowMode,
 };
 
 const testExitCode = await run(
   pnpmCommand,
-  ["exec", "playwright", "test", "--config", "./playwright.config.js", ...playwrightArguments],
+  ["exec", "playwright", "test", "--config", "./playwright.config.ts", ...playwrightArguments],
   environment,
 );
 process.exit(testExitCode);

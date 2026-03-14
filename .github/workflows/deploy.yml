@@ -40,7 +40,7 @@ jobs:
           merge-multiple: true
 
       - run: |
-          mapfile -t release_assets < <(node apps/desktop/scripts/release-assets.mjs print apps/desktop/dist/release-assets)
+          mapfile -t release_assets < <(pnpm exec tsx apps/desktop/scripts/release-assets.ts print apps/desktop/dist/release-assets)
           gh release create "v${{inputs.app-version}}" "${release_assets[@]}" --repo "${{github.repository}}"
         env:
           GH_TOKEN: ${{ github.token }}

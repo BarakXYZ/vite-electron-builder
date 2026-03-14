@@ -1,33 +1,11 @@
 import { getChromeMajorVersion } from "@app/desktop-electron-versions";
-import { writeBuildTaskState } from "../../apps/desktop/scripts/dev/buildTaskState.js";
 import { resolveModuleExportNames } from "mlly";
+import { defineConfig, type Plugin } from "vite";
+import { writeBuildTaskState } from "../../apps/desktop/scripts/dev/buildTaskState.js";
 
 const ELECTRON_API_KEY = "electronAPI";
 
-export default /** @type {import('vite').UserConfig} */ ({
-  build: {
-    assetsDir: ".",
-    emptyOutDir: true,
-    lib: {
-      entry: ["src/exposed.ts", "virtual:browser.js"],
-    },
-    outDir: "dist",
-    reportCompressedSize: false,
-    rollupOptions: {
-      output: [
-        {
-          entryFileNames: "[name].mjs",
-        },
-      ],
-    },
-    sourcemap: "inline",
-    ssr: true,
-    target: `chrome${getChromeMajorVersion()}`,
-  },
-  plugins: [mockBrowserPreloadApi(), handleHotReload()],
-});
-
-function createBrowserExportStatement(key) {
+function createBrowserExportStatement(key: string): string {
   const propertyAccessor = `globalThis[${JSON.stringify(ELECTRON_API_KEY)}][${JSON.stringify(key)}]`;
 
   return key === "default"
@@ -35,14 +13,14 @@ function createBrowserExportStatement(key) {
     : `export const ${key} = ${propertyAccessor};\n`;
 }
 
-function mockBrowserPreloadApi() {
+function mockBrowserPreloadApi(): Plugin {
   const virtualModuleId = "virtual:browser.js";
   const resolvedVirtualModuleId = `\0${virtualModuleId}`;
 
   return {
     async load(id) {
       if (id !== resolvedVirtualModuleId) {
-        return;
+        return null;
       }
 
       const exportedNames = await resolveModuleExportNames("./src/index.ts", {
@@ -56,11 +34,13 @@ function mockBrowserPreloadApi() {
       if (id.endsWith(virtualModuleId)) {
         return resolvedVirtualModuleId;
       }
+
+      return null;
     },
   };
 }
 
-function handleHotReload() {
+function handleHotReload(): Plugin {
   let isDevelopment = false;
 
   return {
@@ -86,3 +66,26 @@ function handleHotReload() {
     },
   };
 }
+
+export default defineConfig({
+  build: {
+    assetsDir: ".",
+    emptyOutDir: true,
+    lib: {
+      entry: ["src/exposed.ts", "virtual:browser.js"],
+    },
+    outDir: "dist",
+    reportCompressedSize: false,
+    rollupOptions: {
+      output: [
+        {
+          entryFileNames: "[name].mjs",
+        },
+      ],
+    },
+    sourcemap: "inline",
+    ssr: true,
+    target: `chrome${getChromeMajorVersion()}`,
+  },
+  plugins: [mockBrowserPreloadApi(), handleHotReload()],
+});

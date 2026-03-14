@@ -1,17 +1,20 @@
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import path from "node:path";
+import path, { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   clearRendererDevServerUrl,
   writeRendererDevServerUrl,
 } from "../../apps/desktop/scripts/dev/rendererDevServerState.js";
 import { defineConfig } from "vite";
 
+const configDirectoryPath = dirname(fileURLToPath(import.meta.url));
+
 export default defineConfig({
   plugins: [react(), tailwindcss(), persistRendererDevServerState()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": path.resolve(configDirectoryPath, "./src"),
     },
   },
   server: {

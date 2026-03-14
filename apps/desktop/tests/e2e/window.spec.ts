@@ -1,5 +1,5 @@
-import { expect, test } from "../fixtures/electron";
-import { getMainWindowState } from "../helpers/mainWindow";
+import { expect, test } from "../fixtures/electron.js";
+import { getMainWindowState } from "../helpers/mainWindow.js";
 
 test("main window is healthy on boot", async ({ electronApp, page, windowMode }) => {
   const windowState = await getMainWindowState(electronApp, page);

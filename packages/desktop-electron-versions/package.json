@@ -5,14 +5,25 @@
   "description": "Helper functions for Electron-bundled component versions",
   "files": [
     "README.md",
-    "index.js"
+    "index.ts",
+    "tsconfig.json"
   ],
   "type": "module",
-  "main": "./index.js",
+  "main": "./index.ts",
+  "exports": {
+    ".": {
+      "types": "./index.ts",
+      "default": "./index.ts"
+    }
+  },
   "scripts": {
     "lint": "oxlint . --config ../../oxlint.config.ts",
     "lint:fix": "oxlint . --config ../../oxlint.config.ts --fix",
     "lint:type-aware": "oxlint . --config ../../oxlint.config.ts --type-aware",
-    "lint:typecheck": "oxlint . --config ../../oxlint.config.ts --type-aware --type-check"
+    "lint:typecheck": "oxlint . --config ../../oxlint.config.ts --type-aware --type-check",
+    "typecheck": "tsgo --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3"
   }
 }

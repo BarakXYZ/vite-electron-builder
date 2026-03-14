@@ -62,7 +62,7 @@ apps/
     types/
     electron-builder.mjs
     package.json
-    playwright.config.js
+    playwright.config.ts
 
 packages/
   desktop-main/
@@ -409,14 +409,14 @@ apps/desktop/tests/
     theme.ts
   support/
     electronAppProfile.ts
-    e2eRuntimeConfig.js
+    e2eRuntimeConfig.ts
 ```
 
 ### E2E Window Modes
 
 Desktop E2E behavior is controlled in:
 
-- [`apps/desktop/tests/e2e.runtime.config.js`](./apps/desktop/tests/e2e.runtime.config.js)
+- [`apps/desktop/tests/e2e.runtime.config.ts`](./apps/desktop/tests/e2e.runtime.config.ts)
 
 Available modes:
 
@@ -432,7 +432,7 @@ pnpm test:background -- --project electron-dark
 pnpm test:interactive -- --project electron-dark
 ```
 
-Playwright configuration lives in [`apps/desktop/playwright.config.js`](./apps/desktop/playwright.config.js).
+Playwright configuration lives in [`apps/desktop/playwright.config.ts`](./apps/desktop/playwright.config.ts).
 
 ## Security Defaults
 

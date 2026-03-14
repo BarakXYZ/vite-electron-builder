@@ -1,5 +1,4 @@
 import { defineConfig } from "@playwright/test";
-import process from "node:process";
 
 export default defineConfig({
   forbidOnly: Boolean(process.env.CI),

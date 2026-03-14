@@ -13,20 +13,29 @@
   "scripts": {
     "clean:dist": "node -e \"require('node:fs').rmSync('dist',{ force:true, recursive:true })\"",
     "compile": "pnpm run clean:dist && pnpm --dir ../.. exec electron-builder build --projectDir ./apps/desktop --config ./electron-builder.mjs",
-    "dev": "node ./scripts/dev-runtime.js",
-    "lint": "oxlint electron-builder.mjs playwright.config.js scripts tests types/preload-api.d.ts --config ../../oxlint.desktop.config.ts",
-    "lint:fix": "oxlint electron-builder.mjs playwright.config.js scripts tests types/preload-api.d.ts --config ../../oxlint.desktop.config.ts --fix",
-    "lint:type-aware": "oxlint electron-builder.mjs playwright.config.js scripts tests types/preload-api.d.ts --config ../../oxlint.desktop.config.ts --type-aware",
-    "lint:typecheck": "oxlint electron-builder.mjs playwright.config.js scripts tests types/preload-api.d.ts --config ../../oxlint.desktop.config.ts --type-aware --type-check",
+    "dev": "tsx ./scripts/dev-runtime.ts",
+    "lint": "oxlint electron-builder.mjs playwright.config.ts scripts tests types/preload-api.d.ts --config ../../oxlint.desktop.config.ts",
+    "lint:fix": "oxlint electron-builder.mjs playwright.config.ts scripts tests types/preload-api.d.ts --config ../../oxlint.desktop.config.ts --fix",
+    "lint:type-aware": "oxlint electron-builder.mjs playwright.config.ts scripts tests types/preload-api.d.ts --config ../../oxlint.desktop.config.ts --type-aware",
+    "lint:typecheck": "oxlint electron-builder.mjs playwright.config.ts scripts tests types/preload-api.d.ts --config ../../oxlint.desktop.config.ts --type-aware --type-check",
     "start": "pnpm run dev",
-    "test": "node ./scripts/run-e2e.js",
-    "test:background": "node ./scripts/run-e2e.js --window-mode background",
-    "test:hidden": "node ./scripts/run-e2e.js --window-mode hidden",
-    "test:interactive": "node ./scripts/run-e2e.js --window-mode interactive"
+    "test": "tsx ./scripts/run-e2e.ts",
+    "test:background": "tsx ./scripts/run-e2e.ts --window-mode background",
+    "test:hidden": "tsx ./scripts/run-e2e.ts --window-mode hidden",
+    "test:interactive": "tsx ./scripts/run-e2e.ts --window-mode interactive",
+    "typecheck": "tsgo --noEmit -p tsconfig.json"
   },
   "dependencies": {
     "@app/desktop-main": "workspace:*",
     "@app/desktop-preload": "workspace:*",
     "@app/desktop-renderer": "workspace:*"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.58.2",
+    "@types/node": "25.3.3",
+    "electron": "40.7.0",
+    "playwright": "^1.58.2",
+    "tsx": "^4.21.0",
+    "typescript": "5.9.3"
   }
 }

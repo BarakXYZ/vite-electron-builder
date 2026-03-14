@@ -2,7 +2,7 @@ import { expect, test as base } from "@playwright/test";
 import { fileURLToPath } from "node:url";
 import type { ElectronApplication } from "playwright";
 import { _electron as electron } from "playwright";
-import { createElectronAppProfile } from "../support/electronAppProfile";
+import { createElectronAppProfile } from "../support/electronAppProfile.js";
 import { loadE2ERuntimeConfig, type E2EWindowMode } from "../support/e2eRuntimeConfig.js";
 
 const desktopAppRootPath = fileURLToPath(new URL("../../", import.meta.url));

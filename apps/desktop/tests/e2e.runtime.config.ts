@@ -1,5 +1,3 @@
-// @ts-check
-
 import { defineE2ERuntimeConfig } from "./support/e2eRuntimeConfig.js";
 
 export default defineE2ERuntimeConfig({

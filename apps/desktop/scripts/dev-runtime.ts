@@ -1,6 +1,6 @@
-import { spawn } from "node:child_process";
+import { spawn, type ChildProcess } from "node:child_process";
 import electronPath from "electron";
-import { watch } from "node:fs";
+import { type FSWatcher, watch } from "node:fs";
 import { basename, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { getBuildTaskStatePath, waitForBuildTaskState } from "./dev/buildTaskState.js";
@@ -15,7 +15,7 @@ const desktopMainStatePath = getBuildTaskStatePath("desktop-main");
 const desktopPreloadStatePath = getBuildTaskStatePath("desktop-preload");
 const restartDebounceMs = 150;
 
-function createElectronEnvironment(rendererDevServerUrl) {
+function createElectronEnvironment(rendererDevServerUrl: string): NodeJS.ProcessEnv {
   return {
     ...process.env,
     MODE: "development",
@@ -24,7 +24,7 @@ function createElectronEnvironment(rendererDevServerUrl) {
   };
 }
 
-function launchElectron(rendererDevServerUrl) {
+function launchElectron(rendererDevServerUrl: string): ChildProcess {
   return spawn(String(electronPath), ["--inspect", appRootPath], {
     cwd: appRootPath,
     env: createElectronEnvironment(rendererDevServerUrl),
@@ -32,8 +32,8 @@ function launchElectron(rendererDevServerUrl) {
   });
 }
 
-function createRestartController(restart) {
-  let restartTimer = null;
+function createRestartController(restart: () => Promise<void>): () => void {
+  let restartTimer: NodeJS.Timeout | null = null;
 
   return () => {
     if (restartTimer !== null) {
@@ -47,7 +47,25 @@ function createRestartController(restart) {
   };
 }
 
-async function main() {
+function trackUnexpectedExit({
+  electronProcess,
+  isRestarting,
+  isShuttingDown,
+}: {
+  electronProcess: ChildProcess;
+  isRestarting: () => boolean;
+  isShuttingDown: () => boolean;
+}): void {
+  electronProcess.once("exit", (code, signal) => {
+    if (isShuttingDown() || isRestarting()) {
+      return;
+    }
+
+    process.exit(code ?? (signal ? 1 : 0));
+  });
+}
+
+async function main(): Promise<void> {
   const startupTime = Date.now();
   await Promise.all([
     waitForBuildTaskState("desktop-main", { notBeforeMs: startupTime }),
@@ -55,12 +73,17 @@ async function main() {
     waitForRendererDevServerUrl(),
   ]);
 
-  let rendererDevServerUrl = await waitForRendererDevServerUrl();
-  let electronProcess = launchElectron(rendererDevServerUrl);
+  let electronProcess: ChildProcess | null = launchElectron(await waitForRendererDevServerUrl());
   let isShuttingDown = false;
   let isRestarting = false;
 
-  async function stopElectron() {
+  trackUnexpectedExit({
+    electronProcess,
+    isRestarting: () => isRestarting,
+    isShuttingDown: () => isShuttingDown,
+  });
+
+  async function stopElectron(): Promise<void> {
     if (electronProcess === null) {
       return;
     }
@@ -68,13 +91,13 @@ async function main() {
     const child = electronProcess;
     electronProcess = null;
 
-    await new Promise((resolvePromise) => {
-      child.once("exit", () => resolvePromise(undefined));
+    await new Promise<void>((resolvePromise) => {
+      child.once("exit", () => resolvePromise());
       child.kill("SIGTERM");
     });
   }
 
-  async function restartElectron() {
+  async function restartElectron(): Promise<void> {
     if (isRestarting || isShuttingDown) {
       return;
     }
@@ -84,38 +107,25 @@ async function main() {
     try {
       const nextRendererDevServerUrl =
         (await loadRendererDevServerUrl()) ?? (await waitForRendererDevServerUrl());
-      rendererDevServerUrl = nextRendererDevServerUrl;
       await stopElectron();
-      electronProcess = launchElectron(rendererDevServerUrl);
-      electronProcess.once("exit", (code, signal) => {
-        if (!isShuttingDown && !isRestarting && code !== 0) {
-          process.exitCode = code ?? 1;
-        }
-
-        if (!isShuttingDown && !isRestarting && signal) {
-          process.exitCode = 1;
-        }
+      electronProcess = launchElectron(nextRendererDevServerUrl);
+      trackUnexpectedExit({
+        electronProcess,
+        isRestarting: () => isRestarting,
+        isShuttingDown: () => isShuttingDown,
       });
     } finally {
       isRestarting = false;
     }
   }
 
-  electronProcess.once("exit", (code, signal) => {
-    if (isShuttingDown || isRestarting) {
-      return;
-    }
-
-    process.exit(code ?? (signal ? 1 : 0));
-  });
-
   const scheduleRestart = createRestartController(restartElectron);
-  const watchedDirectories = [
+  const watchedDirectories: ReadonlyArray<readonly [string, string]> = [
     [dirname(stateFilePath), basename(stateFilePath)],
     [dirname(desktopMainStatePath), basename(desktopMainStatePath)],
     [dirname(desktopPreloadStatePath), basename(desktopPreloadStatePath)],
   ];
-  const watchers = watchedDirectories.map(([directoryPath, fileName]) =>
+  const watchers: Array<FSWatcher> = watchedDirectories.map(([directoryPath, fileName]) =>
     watch(directoryPath, (_eventType, changedFileName) => {
       if (changedFileName === null || changedFileName === fileName) {
         scheduleRestart();
@@ -123,7 +133,7 @@ async function main() {
     }),
   );
 
-  async function shutdown() {
+  async function shutdown(): Promise<void> {
     if (isShuttingDown) {
       return;
     }

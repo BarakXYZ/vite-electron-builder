@@ -1,6 +1,5 @@
 import { execSync } from "node:child_process";
-import process from "node:process";
-import { URL, fileURLToPath } from "node:url";
+import { fileURLToPath } from "node:url";
 import workspacePackageJson from "../../package.json" with { type: "json" };
 
 const workspaceRootPath = fileURLToPath(new URL("../../", import.meta.url));

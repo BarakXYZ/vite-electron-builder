@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { expect, test } from "../fixtures/electron";
+import { expect, test } from "../fixtures/electron.js";
 
 test.describe("preload context", () => {
   test("exposes a single explicit bridge object", async ({ page }) => {

@@ -4,17 +4,23 @@
   "private": true,
   "description": "Helper scripts for integrating a renderer workspace into the desktop app",
   "files": [
-    "create-renderer.js",
-    "index.js"
+    "create-renderer.ts",
+    "index.ts",
+    "tsconfig.json"
   ],
   "type": "module",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "create-renderer": "node create-renderer.js",
+    "create-renderer": "tsx create-renderer.ts",
     "lint": "oxlint . --config ../../oxlint.config.ts",
     "lint:fix": "oxlint . --config ../../oxlint.config.ts --fix",
     "lint:type-aware": "oxlint . --config ../../oxlint.config.ts --type-aware",
     "lint:typecheck": "oxlint . --config ../../oxlint.config.ts --type-aware --type-check",
-    "start": "node index.js --no-warnings"
+    "start": "tsx index.ts --no-warnings",
+    "typecheck": "tsgo --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "tsx": "^4.21.0",
+    "typescript": "5.9.3"
   }
 }

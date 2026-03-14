@@ -6,44 +6,45 @@ const appRootPath = dirname(fileURLToPath(new URL("../../package.json", import.m
 const stateDirectoryPath = resolve(appRootPath, ".turbo", "dev");
 const defaultPollIntervalMs = 100;
 const defaultTimeoutMs = 30_000;
-const validBuildTaskNames = new Set(["desktop-main", "desktop-preload"]);
 
-/**
- * @param {number} milliseconds
- */
-function delay(milliseconds) {
+export type DesktopBuildTaskName = "desktop-main" | "desktop-preload";
+
+type BuildTaskState = {
+  updatedAt: number;
+};
+
+type WaitForBuildTaskStateOptions = {
+  notBeforeMs?: number;
+  pollIntervalMs?: number;
+  timeoutMs?: number;
+};
+
+const validBuildTaskNames = new Set<DesktopBuildTaskName>(["desktop-main", "desktop-preload"]);
+
+function delay(milliseconds: number): Promise<void> {
   return new Promise((resolvePromise) => {
     setTimeout(resolvePromise, milliseconds);
   });
 }
 
-/**
- * @param {string} taskName
- */
-function assertBuildTaskName(taskName) {
-  if (!validBuildTaskNames.has(taskName)) {
+function assertBuildTaskName(taskName: string): asserts taskName is DesktopBuildTaskName {
+  if (!validBuildTaskNames.has(taskName as DesktopBuildTaskName)) {
     throw new TypeError(`Unsupported desktop build task: ${taskName}`);
   }
 }
 
-/**
- * @param {string} taskName
- */
-export function getBuildTaskStatePath(taskName) {
+export function getBuildTaskStatePath(taskName: DesktopBuildTaskName): string {
   assertBuildTaskName(taskName);
   return resolve(stateDirectoryPath, `${taskName}.json`);
 }
 
-async function ensureStateDirectory() {
+async function ensureStateDirectory(): Promise<void> {
   await mkdir(stateDirectoryPath, { recursive: true });
 }
 
-/**
- * @param {string} taskName
- */
-async function readBuildState(taskName) {
+async function readBuildState(taskName: DesktopBuildTaskName): Promise<BuildTaskState | null> {
   try {
-    return JSON.parse(await readFile(getBuildTaskStatePath(taskName), "utf8"));
+    return JSON.parse(await readFile(getBuildTaskStatePath(taskName), "utf8")) as BuildTaskState;
   } catch (error) {
     if (
       error &&
@@ -58,24 +59,23 @@ async function readBuildState(taskName) {
   }
 }
 
-/**
- * @param {"desktop-main" | "desktop-preload"} taskName
- */
-export async function writeBuildTaskState(taskName) {
+export async function writeBuildTaskState(taskName: DesktopBuildTaskName): Promise<void> {
   assertBuildTaskName(taskName);
   await ensureStateDirectory();
+  const buildTaskState: BuildTaskState = {
+    updatedAt: Date.now(),
+  };
   await writeFile(
     getBuildTaskStatePath(taskName),
-    `${JSON.stringify({ updatedAt: Date.now() }, null, 2)}\n`,
+    `${JSON.stringify(buildTaskState, null, 2)}\n`,
     "utf8",
   );
 }
 
-/**
- * @param {"desktop-main" | "desktop-preload"} taskName
- * @param {{ notBeforeMs?: number; pollIntervalMs?: number; timeoutMs?: number }} [options]
- */
-export async function waitForBuildTaskState(taskName, options = {}) {
+export async function waitForBuildTaskState(
+  taskName: DesktopBuildTaskName,
+  options: WaitForBuildTaskStateOptions = {},
+): Promise<void> {
   assertBuildTaskName(taskName);
 
   const {
@@ -87,13 +87,7 @@ export async function waitForBuildTaskState(taskName, options = {}) {
 
   while (Date.now() - startTime <= timeoutMs) {
     const state = await readBuildState(taskName);
-    if (
-      state &&
-      typeof state === "object" &&
-      "updatedAt" in state &&
-      typeof state.updatedAt === "number" &&
-      state.updatedAt >= notBeforeMs
-    ) {
+    if (state && state.updatedAt >= notBeforeMs) {
       return;
     }
 
