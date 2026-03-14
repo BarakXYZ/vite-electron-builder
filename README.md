@@ -251,6 +251,30 @@ That means the suite verifies:
 - true system-mode behavior
 - renderer/media/theme-state consistency
 
+The suite is organized by responsibility instead of a single monolithic spec:
+
+```text
+tests/
+  e2e/
+    app-shell.spec.ts
+    preload-api.spec.ts
+    theme.spec.ts
+    window.spec.ts
+  fixtures/
+    electron.ts
+  helpers/
+    mainWindow.ts
+    theme.ts
+  support/
+    electronAppProfile.ts
+```
+
+That layout follows Playwright's fixture and project model:
+
+- shared Electron launch logic lives in reusable fixtures
+- repeated assertions stay in helper modules
+- spec files stay focused on one behavior area each
+
 Run all projects:
 
 ```sh
