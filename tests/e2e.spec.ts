@@ -4,15 +4,17 @@ import { _electron as electron, type ElectronApplication, type JSHandle } from "
 import { createHash } from "node:crypto";
 
 type TestFixtures = {
-  electronApp: ElectronApplication;
   electronVersions: NodeJS.ProcessVersions;
-  page: Page;
 };
 
 type MainWindowState = {
   isCrashed: boolean;
   isDevToolsOpened: boolean;
   isVisible: boolean;
+};
+
+type WorkerFixtures = {
+  electronApp: ElectronApplication;
 };
 
 process.env.PLAYWRIGHT_TEST = "true";
@@ -41,7 +43,7 @@ async function getMainWindowState(
   });
 }
 
-const test = base.extend<TestFixtures>({
+const test = base.extend<TestFixtures, WorkerFixtures>({
   electronApp: [
     async ({}, use) => {
       const electronApp = await electron.launch({
