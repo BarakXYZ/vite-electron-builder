@@ -66,19 +66,11 @@ async function terminateChildProcess(childProcess: ChildProcess | null): Promise
 
 async function main(): Promise<void> {
   const pnpmCommand = getPnpmCommand();
-  const companionProcess = spawnProcess(
-    pnpmCommand,
-    [
-      "exec",
-      "turbo",
-      "run",
-      "dev",
-      "--filter=@app/desktop-renderer",
-      "--filter=@app/desktop-main",
-      "--filter=@app/desktop-preload",
-    ],
-    workspaceRootPath,
-  );
+  const companionProcesses = [
+    spawnProcess(pnpmCommand, ["--filter", "@app/desktop-renderer", "dev"], workspaceRootPath),
+    spawnProcess(pnpmCommand, ["--filter", "@app/desktop-main", "dev"], workspaceRootPath),
+    spawnProcess(pnpmCommand, ["--filter", "@app/desktop-preload", "dev"], workspaceRootPath),
+  ];
   const runtimeProcess = spawnProcess(
     pnpmCommand,
     ["exec", "tsx", "./scripts/dev-runtime.ts"],
@@ -95,18 +87,20 @@ async function main(): Promise<void> {
     isShuttingDown = true;
     await Promise.all([
       terminateChildProcess(runtimeProcess),
-      terminateChildProcess(companionProcess),
+      ...companionProcesses.map((childProcess) => terminateChildProcess(childProcess)),
     ]);
     process.exit(exitCode);
   }
 
-  companionProcess.once("exit", (code, signal) => {
-    if (isShuttingDown) {
-      return;
-    }
+  for (const companionProcess of companionProcesses) {
+    companionProcess.once("exit", (code, signal) => {
+      if (isShuttingDown) {
+        return;
+      }
 
-    void shutdown(code ?? (signal ? 1 : 0));
-  });
+      void shutdown(code ?? (signal ? 1 : 0));
+    });
+  }
 
   runtimeProcess.once("exit", (code, signal) => {
     if (isShuttingDown) {

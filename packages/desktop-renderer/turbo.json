@@ -6,6 +6,7 @@
     },
     "dev": {
       "cache": false,
+      "interruptible": true,
       "outputs": [],
       "persistent": true
     }
