@@ -1,6 +1,7 @@
-import { AbstractSecurityRule } from "./AbstractSecurityModule.js";
-import * as Electron from "electron";
+import { SecurityRule } from "./SecurityRule.js";
+import type { WebContents } from "electron";
 import { URL } from "node:url";
+import { emitDevSecurityWarning } from "./devSecurityWarning.js";
 
 /**
  * Block navigation to origins not on the allowlist.
@@ -10,7 +11,7 @@ import { URL } from "node:url";
  *
  * @see https://www.electronjs.org/docs/latest/tutorial/security#13-disable-or-limit-navigation
  */
-export class BlockNotAllowedOrigins extends AbstractSecurityRule {
+export class BlockNotAllowedOrigins extends SecurityRule {
   readonly #allowedOrigins: Set<string>;
 
   constructor(allowedOrigins: Set<string> = new Set()) {
@@ -18,7 +19,7 @@ export class BlockNotAllowedOrigins extends AbstractSecurityRule {
     this.#allowedOrigins = structuredClone(allowedOrigins);
   }
 
-  applyRule(contents: Electron.WebContents): Promise<void> | void {
+  applyRule(contents: WebContents): Promise<void> | void {
     contents.on("will-navigate", (event, url) => {
       const { origin } = new URL(url);
       if (this.#allowedOrigins.has(origin)) {
@@ -28,9 +29,7 @@ export class BlockNotAllowedOrigins extends AbstractSecurityRule {
       // Prevent navigation
       event.preventDefault();
 
-      if (import.meta.env.DEV) {
-        console.warn(`Blocked navigating to disallowed origin: ${origin}`);
-      }
+      emitDevSecurityWarning(`Blocked navigating to disallowed origin: ${origin}`);
     });
   }
 }

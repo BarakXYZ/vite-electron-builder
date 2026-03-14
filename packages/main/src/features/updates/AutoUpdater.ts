@@ -1,18 +1,27 @@
-import { AppModule } from "../AppModule.js";
+import type { AppModule } from "../../app/AppModule.js";
 import electronUpdater, { type AppUpdater, type Logger } from "electron-updater";
 
 type DownloadNotification = Parameters<AppUpdater["checkForUpdatesAndNotify"]>[0];
+
+function hasErrorMessage(error: unknown): error is { readonly message: string } {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    typeof error.message === "string"
+  );
+}
 
 export class AutoUpdater implements AppModule {
   readonly #logger: Logger | null;
   readonly #notification: DownloadNotification;
 
   constructor({
-    logger = null,
     downloadNotification = undefined,
+    logger = null,
   }: {
-    logger?: Logger | null | undefined;
     downloadNotification?: DownloadNotification;
+    logger?: Logger | null | undefined;
   } = {}) {
     this.#logger = logger;
     this.#notification = downloadNotification;
@@ -41,10 +50,8 @@ export class AutoUpdater implements AppModule {
 
       return await updater.checkForUpdatesAndNotify(this.#notification);
     } catch (error) {
-      if (error instanceof Error) {
-        if (error.message.includes("No published versions")) {
-          return null;
-        }
+      if (hasErrorMessage(error) && error.message.includes("No published versions")) {
+        return null;
       }
 
       throw error;

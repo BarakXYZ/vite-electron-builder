@@ -1,5 +1,5 @@
-import { AppModule } from "../AppModule.js";
-import { ModuleContext } from "../ModuleContext.js";
+import type { AppModule } from "../../app/AppModule.js";
+import type { ModuleContext } from "../../app/ModuleContext.js";
 
 export class HardwareAccelerationModule implements AppModule {
   readonly #shouldBeDisabled: boolean;

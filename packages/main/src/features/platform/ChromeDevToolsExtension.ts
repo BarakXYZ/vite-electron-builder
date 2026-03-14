@@ -1,26 +1,26 @@
-import { AppModule } from "../AppModule.js";
-import { ModuleContext } from "../ModuleContext.js";
+import type { AppModule } from "../../app/AppModule.js";
+import type { ModuleContext } from "../../app/ModuleContext.js";
 import installer from "electron-devtools-installer";
 
 const {
-  REDUX_DEVTOOLS,
-  VUEJS_DEVTOOLS,
-  EMBER_INSPECTOR,
   BACKBONE_DEBUGGER,
-  REACT_DEVELOPER_TOOLS,
+  default: installExtension,
+  EMBER_INSPECTOR,
   JQUERY_DEBUGGER,
   MOBX_DEVTOOLS,
-  default: installExtension,
+  REACT_DEVELOPER_TOOLS,
+  REDUX_DEVTOOLS,
+  VUEJS_DEVTOOLS,
 } = installer;
 
 const extensionsDictionary = {
-  REDUX_DEVTOOLS,
-  VUEJS_DEVTOOLS,
-  EMBER_INSPECTOR,
   BACKBONE_DEBUGGER,
-  REACT_DEVELOPER_TOOLS,
+  EMBER_INSPECTOR,
   JQUERY_DEBUGGER,
   MOBX_DEVTOOLS,
+  REACT_DEVELOPER_TOOLS,
+  REDUX_DEVTOOLS,
+  VUEJS_DEVTOOLS,
 } as const;
 
 export class ChromeDevToolsExtension implements AppModule {

@@ -1,6 +1,7 @@
 import { getNodeMajorVersion } from "@app/electron-versions";
-import { spawn } from "child_process";
 import electronPath from "electron";
+import { spawn } from "node:child_process";
+import process from "node:process";
 
 export default /**
  * @type {import('vite').UserConfig}
@@ -8,22 +9,22 @@ export default /**
  */
 ({
   build: {
-    ssr: true,
-    sourcemap: "inline",
-    outDir: "dist",
     assetsDir: ".",
-    target: `node${getNodeMajorVersion()}`,
+    emptyOutDir: true,
     lib: {
       entry: "src/index.ts",
       formats: ["es"],
     },
+    outDir: "dist",
+    reportCompressedSize: false,
     rollupOptions: {
       output: {
         entryFileNames: "[name].js",
       },
     },
-    emptyOutDir: true,
-    reportCompressedSize: false,
+    sourcemap: "inline",
+    ssr: true,
+    target: `node${getNodeMajorVersion()}`,
   },
   plugins: [handleHotReload()],
 });
@@ -40,8 +41,6 @@ function handleHotReload() {
   let rendererWatchServer = null;
 
   return {
-    name: "@app/main-process-hot-reload",
-
     config(config, env) {
       if (env.mode !== "development") {
         return;
@@ -64,6 +63,7 @@ function handleHotReload() {
         },
       };
     },
+    name: "@app/main-process-hot-reload",
 
     writeBundle() {
       if (process.env.NODE_ENV !== "development") {
