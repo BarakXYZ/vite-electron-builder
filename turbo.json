@@ -35,18 +35,46 @@
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
+      "outputs": []
     },
     "lint": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/oxlint.config.ts",
+        "$TURBO_ROOT$/oxlint.desktop.config.ts",
+        "$TURBO_ROOT$/oxlint.tests.config.ts",
+        "$TURBO_ROOT$/oxlint.ui.config.ts"
+      ],
       "outputs": []
     },
     "lint:fix": {
-      "cache": false
+      "cache": false,
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/oxlint.config.ts",
+        "$TURBO_ROOT$/oxlint.desktop.config.ts",
+        "$TURBO_ROOT$/oxlint.tests.config.ts",
+        "$TURBO_ROOT$/oxlint.ui.config.ts"
+      ]
     },
     "lint:type-aware": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/oxlint.config.ts",
+        "$TURBO_ROOT$/oxlint.desktop.config.ts",
+        "$TURBO_ROOT$/oxlint.tests.config.ts",
+        "$TURBO_ROOT$/oxlint.ui.config.ts"
+      ],
       "outputs": []
     },
     "lint:typecheck": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/oxlint.config.ts",
+        "$TURBO_ROOT$/oxlint.desktop.config.ts",
+        "$TURBO_ROOT$/oxlint.tests.config.ts",
+        "$TURBO_ROOT$/oxlint.ui.config.ts"
+      ],
       "outputs": []
     },
     "transit": {

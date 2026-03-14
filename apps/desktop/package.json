@@ -11,6 +11,7 @@
   "type": "module",
   "main": "./scripts/entry-point.mjs",
   "scripts": {
+    "build": "pnpm run compile",
     "clean:dist": "node -e \"require('node:fs').rmSync('dist',{ force:true, recursive:true })\"",
     "compile": "pnpm run clean:dist && pnpm --dir ../.. exec electron-builder build --projectDir ./apps/desktop --config ./electron-builder.mjs",
     "dev": "tsx ./scripts/dev-runtime.ts",

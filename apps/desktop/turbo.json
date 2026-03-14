@@ -1,6 +1,12 @@
 {
   "extends": ["//"],
   "tasks": {
+    "build": {
+      "cache": false,
+      "dependsOn": ["^build"],
+      "env": ["VITE_DISTRIBUTION_CHANNEL"],
+      "outputs": ["dist/**"]
+    },
     "compile": {
       "cache": false,
       "dependsOn": ["^build"],

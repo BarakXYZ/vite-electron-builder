@@ -2,7 +2,8 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "env": ["VITE_DISTRIBUTION_CHANNEL"]
+      "env": ["VITE_DISTRIBUTION_CHANNEL"],
+      "outputs": ["dist/**"]
     },
     "dev": {
       "cache": false,

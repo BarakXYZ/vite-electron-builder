@@ -166,10 +166,10 @@ Shared defaults live in [`turbo.json`](./turbo.json).
 
 Package-specific task policy lives next to the package when behavior is app-specific:
 
-- [`apps/desktop/turbo.json`](./apps/desktop/turbo.json) for desktop-only `dev` / `compile` / `test*`
+- [`apps/desktop/turbo.json`](./apps/desktop/turbo.json) for desktop-only `build` / `compile` / `dev` / `test*`
 - [`packages/desktop-main/turbo.json`](./packages/desktop-main/turbo.json) for desktop-main build env hashing and dev watch policy
 - [`packages/desktop-preload/turbo.json`](./packages/desktop-preload/turbo.json) for preload dev watch policy
-- [`packages/desktop-renderer/turbo.json`](./packages/desktop-renderer/turbo.json) for renderer dev-server policy
+- [`packages/desktop-renderer/turbo.json`](./packages/desktop-renderer/turbo.json) for renderer build outputs and dev-server policy
 
 That gives the repo:
 
@@ -267,7 +267,8 @@ This repository already accounts for the main non-default task inputs used by th
 
 - `VITE_DISTRIBUTION_CHANNEL` is hashed for `build` and `compile`
 - `APP_E2E_WINDOW_MODE` is declared for the E2E tasks
-- `pnpm-lock.yaml` is included in the global hash via `globalDependencies`
+- `pnpm-lock.yaml` and `pnpm-workspace.yaml` are included in the global hash via `globalDependencies`
+- package lint tasks hash the shared root Oxlint configs explicitly
 
 Those settings live in [`turbo.json`](./turbo.json).
 
