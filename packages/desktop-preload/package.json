@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@app/desktop-electron-versions": "workspace:*",
-    "mlly": "1.8.0",
+    "mlly": "1.8.1",
     "typescript": "5.9.3",
     "vite": "7.3.1"
   }
