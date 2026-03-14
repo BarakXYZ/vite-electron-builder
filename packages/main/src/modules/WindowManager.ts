@@ -2,11 +2,14 @@ import type { AppModule } from "../AppModule.js";
 import { ModuleContext } from "../ModuleContext.js";
 import { BrowserWindow } from "electron";
 import type { AppInitConfig } from "../AppInitConfig.js";
+import { DevToolsWindowManager } from "./DevToolsWindowManager.js";
 
 class WindowManager implements AppModule {
   readonly #preload: { path: string };
   readonly #renderer: { path: string } | URL;
   readonly #openDevTools;
+  #devToolsWindowManager: DevToolsWindowManager | null;
+  #mainWindow: BrowserWindow | null;
 
   constructor({
     initConfig,
@@ -18,10 +21,13 @@ class WindowManager implements AppModule {
     this.#preload = initConfig.preload;
     this.#renderer = initConfig.renderer;
     this.#openDevTools = openDevTools;
+    this.#devToolsWindowManager = null;
+    this.#mainWindow = null;
   }
 
   async enable({ app }: ModuleContext): Promise<void> {
     await app.whenReady();
+    this.#devToolsWindowManager = this.#openDevTools ? new DevToolsWindowManager(app) : null;
     await this.restoreOrCreateWindow(true);
     app.on("second-instance", () => this.restoreOrCreateWindow(true));
     app.on("activate", () => this.restoreOrCreateWindow(true));
@@ -45,14 +51,21 @@ class WindowManager implements AppModule {
       await browserWindow.loadFile(this.#renderer.path);
     }
 
+    browserWindow.on("closed", () => {
+      if (this.#mainWindow === browserWindow) {
+        this.#mainWindow = null;
+      }
+    });
+
     return browserWindow;
   }
 
   async restoreOrCreateWindow(show = false) {
-    let window = BrowserWindow.getAllWindows().find((w) => !w.isDestroyed());
+    let window = this.#mainWindow;
 
-    if (window === undefined) {
+    if (window === null || window.isDestroyed()) {
       window = await this.createWindow();
+      this.#mainWindow = window;
     }
 
     if (!show) {
@@ -63,10 +76,10 @@ class WindowManager implements AppModule {
       window.restore();
     }
 
-    window?.show();
+    window.show();
 
     if (this.#openDevTools) {
-      window?.webContents.openDevTools();
+      this.#devToolsWindowManager?.openFor(window);
     }
 
     window.focus();
