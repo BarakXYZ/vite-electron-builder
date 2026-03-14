@@ -20,18 +20,18 @@ const rendererWatchServer = await createServer({
 await rendererWatchServer.listen();
 
 const rendererWatchServerProvider = {
-  name: "@app/desktop-renderer-watch-server-provider",
   api: {
     provideRendererWatchServer() {
       return rendererWatchServer;
     },
   },
+  name: "@app/desktop-renderer-watch-server-provider",
 };
 
 for (const packagePath of [preloadPackagePath, mainPackagePath]) {
   await build({
     mode,
-    root: packagePath,
     plugins: [rendererWatchServerProvider],
+    root: packagePath,
   });
 }

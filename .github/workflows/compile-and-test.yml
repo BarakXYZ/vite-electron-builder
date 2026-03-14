@@ -71,12 +71,14 @@ jobs:
       - run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- pnpm run test --if-present
         if: matrix.os == 'ubuntu-latest'
 
+      - run: node apps/desktop/scripts/release-assets.mjs stage apps/desktop/dist apps/desktop/dist/release-assets
+
       - uses: actions/attest-build-provenance@v3
         with:
-          subject-path: "apps/desktop/dist/**"
+          subject-path: "apps/desktop/dist/release-assets/**"
 
       - name: Upload compiled app
         uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.os }}-${{inputs.distribution-channel}}
-          path: apps/desktop/dist
+          path: apps/desktop/dist/release-assets
