@@ -162,6 +162,13 @@ Today it governs:
 - `test:interactive`
 - `typecheck`
 
+Shared defaults live in [`turbo.json`](./turbo.json).
+
+Package-specific task policy lives next to the package when behavior is app-specific:
+
+- [`apps/desktop/turbo.json`](./apps/desktop/turbo.json) for desktop-only `dev` / `compile` / `test*`
+- [`packages/desktop-main/turbo.json`](./packages/desktop-main/turbo.json) for desktop-main build env hashing
+
 That gives the repo:
 
 - package-graph task ordering
@@ -171,8 +178,6 @@ That gives the repo:
 - affected-only execution in CI when Turbo has an SCM base to compare against
 - a clean path to remote caching in CI via `TURBO_TEAM` and `TURBO_TOKEN`
 - a stable foundation for future `apps/web` and `apps/mobile`
-
-Configuration lives in [`turbo.json`](./turbo.json).
 
 ### Remote Cache Onboarding
 

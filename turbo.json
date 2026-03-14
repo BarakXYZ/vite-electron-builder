@@ -35,18 +35,7 @@
     },
     "build": {
       "dependsOn": ["^build"],
-      "env": ["VITE_DISTRIBUTION_CHANNEL"],
       "outputs": ["dist/**"]
-    },
-    "compile": {
-      "cache": false,
-      "dependsOn": ["^build"],
-      "env": ["VITE_DISTRIBUTION_CHANNEL"],
-      "outputs": []
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true
     },
     "lint": {
       "outputs": []
@@ -58,26 +47,6 @@
       "outputs": []
     },
     "lint:typecheck": {
-      "outputs": []
-    },
-    "test": {
-      "cache": false,
-      "env": ["APP_E2E_WINDOW_MODE", "CI"],
-      "outputs": []
-    },
-    "test:background": {
-      "cache": false,
-      "env": ["APP_E2E_WINDOW_MODE", "CI"],
-      "outputs": []
-    },
-    "test:hidden": {
-      "cache": false,
-      "env": ["APP_E2E_WINDOW_MODE", "CI"],
-      "outputs": []
-    },
-    "test:interactive": {
-      "cache": false,
-      "env": ["APP_E2E_WINDOW_MODE", "CI"],
       "outputs": []
     },
     "transit": {
