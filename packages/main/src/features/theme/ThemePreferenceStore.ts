@@ -19,7 +19,7 @@ export class ThemePreferenceStore {
   readonly #filePath: string;
 
   constructor(app: Electron.App) {
-    this.#filePath = join(app.getPath("userData"), "preferences", "theme.json");
+    this.#filePath = join(app.getPath("userData"), "app-preferences", "theme.json");
   }
 
   load(): ThemeSource | null {
