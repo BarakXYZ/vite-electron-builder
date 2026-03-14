@@ -46,7 +46,7 @@ export async function initApp({
     .init(terminateAppOnLastWindowClose())
     .init(hardwareAccelerationMode({ enable: false }))
     .init(autoUpdater())
-    .init(createMainWindowModule({ initConfig, openDevTools: import.meta.env.DEV }))
+    .init(createMainWindowModule({ environment, initConfig, openDevTools: import.meta.env.DEV }))
 
     // Install DevTools extension if needed.
     // .init(chromeDevToolsExtension({ extension: "VUEJS3_DEVTOOLS" }))

@@ -3,11 +3,13 @@ import type { AppModule } from "../../../app/AppModule.js";
 import type { ModuleContext } from "../../../app/ModuleContext.js";
 import { isRendererUrlTarget } from "../../../app/rendererTarget.js";
 import { BrowserWindow, nativeTheme } from "electron";
+import { focusWindowIfInteractive, presentWindow } from "../../testing/E2EWindowPresentation.js";
 import { DevToolsWindowManager } from "../devtools/DevToolsWindowManager.js";
 import { getNativeBackgroundColor } from "../../theme/ThemePresentation.js";
 import type { ResolvedTheme } from "../../theme/ThemeState.js";
 
 class MainWindowManager implements AppModule {
+  readonly #environment;
   readonly #preload: { path: string };
   readonly #renderer: { path: string } | URL;
   readonly #openDevTools;
@@ -15,12 +17,15 @@ class MainWindowManager implements AppModule {
   #mainWindow: BrowserWindow | null;
 
   constructor({
+    environment = process.env,
     initConfig,
     openDevTools = false,
   }: {
+    environment?: NodeJS.ProcessEnv;
     initConfig: AppInitConfig;
     openDevTools?: boolean;
   }) {
+    this.#environment = environment;
     this.#preload = initConfig.preload;
     this.#renderer = initConfig.renderer;
     this.#openDevTools = openDevTools;
@@ -88,13 +93,13 @@ class MainWindowManager implements AppModule {
       window.restore();
     }
 
-    window.show();
+    presentWindow(window, this.#environment);
 
     if (this.#openDevTools) {
       this.#devToolsWindowManager?.openFor(window);
     }
 
-    window.focus();
+    focusWindowIfInteractive(window, this.#environment);
 
     return window;
   }
