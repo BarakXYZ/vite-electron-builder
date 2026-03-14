@@ -42,6 +42,8 @@ pnpm start
 Common tasks:
 
 ```sh
+pnpm dev
+pnpm dev:app
 pnpm build
 pnpm lint
 pnpm typecheck
@@ -120,7 +122,15 @@ Runs TSGo type checking across workspaces that expose `typecheck`.
 pnpm start
 ```
 
-Starts the desktop Electron development flow from `apps/desktop`.
+Starts an app-scoped desktop Electron development session that exits when the app closes.
+
+```sh
+pnpm dev
+pnpm dev:app
+```
+
+- `pnpm dev` keeps the renderer server and main/preload watch tasks warm after the app window closes.
+- `pnpm dev:app` starts the same desktop stack, but tears the session down when the Electron app exits.
 
 ```sh
 pnpm test
@@ -153,6 +163,7 @@ Today it governs:
 - `build`
 - `compile`
 - `dev`
+- `dev:app`
 - `lint`
 - `lint:type-aware`
 - `lint:typecheck`
@@ -166,7 +177,7 @@ Shared defaults live in [`turbo.json`](./turbo.json).
 
 Package-specific task policy lives next to the package when behavior is app-specific:
 
-- [`apps/desktop/turbo.json`](./apps/desktop/turbo.json) for desktop-only `build` / `compile` / `dev` / `test*`
+- [`apps/desktop/turbo.json`](./apps/desktop/turbo.json) for desktop-only `build` / `compile` / `dev` / `dev:app` / `test*`
 - [`packages/desktop-main/turbo.json`](./packages/desktop-main/turbo.json) for desktop-main build env hashing and dev watch policy
 - [`packages/desktop-preload/turbo.json`](./packages/desktop-preload/turbo.json) for preload dev watch policy
 - [`packages/desktop-renderer/turbo.json`](./packages/desktop-renderer/turbo.json) for renderer build outputs and dev-server policy
@@ -186,6 +197,7 @@ The desktop development flow now follows the same graph-aware model:
 - `@app/desktop-renderer#dev` runs the Vite renderer server and publishes its resolved URL to the app workspace
 - `@app/desktop-main#dev` and `@app/desktop-preload#dev` run watch builds
 - `@app/desktop#dev` owns only the Electron runtime process and composes the companion tasks with Turbo `with`
+- `@app/desktop#dev:app` provides an app-scoped session that shuts the companion tasks down when Electron exits
 
 ### Remote Cache Onboarding
 

@@ -19,6 +19,11 @@
       "persistent": true,
       "with": ["@app/desktop-renderer#dev", "@app/desktop-main#dev", "@app/desktop-preload#dev"]
     },
+    "dev:app": {
+      "cache": false,
+      "outputs": [],
+      "persistent": true
+    },
     "test": {
       "cache": false,
       "dependsOn": ["^build"],

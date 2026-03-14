@@ -18,6 +18,7 @@ const restartDebounceMs = 150;
 function createElectronEnvironment(rendererDevServerUrl: string): NodeJS.ProcessEnv {
   return {
     ...process.env,
+    APP_OPEN_DEVTOOLS: "true",
     MODE: "development",
     NODE_ENV: "development",
     VITE_DEV_SERVER_URL: rendererDevServerUrl,

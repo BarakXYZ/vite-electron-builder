@@ -1,6 +1,7 @@
 import type { AppInitConfig } from "./AppInitConfig.js";
 import { createModuleRunner } from "./ModuleRunner.js";
 import { isRendererUrlTarget } from "./rendererTarget.js";
+import { shouldOpenDevTools } from "./runtimeFlags.js";
 import { disallowMultipleAppInstance } from "../features/lifecycle/SingleInstanceApp.js";
 import { terminateAppOnLastWindowClose } from "../features/lifecycle/ApplicationTerminatorOnLastWindowClose.js";
 import { hardwareAccelerationMode } from "../features/platform/HardwareAccelerationModule.js";
@@ -46,7 +47,13 @@ export async function initApp({
     .init(terminateAppOnLastWindowClose())
     .init(hardwareAccelerationMode({ enable: false }))
     .init(autoUpdater())
-    .init(createMainWindowModule({ environment, initConfig, openDevTools: import.meta.env.DEV }))
+    .init(
+      createMainWindowModule({
+        environment,
+        initConfig,
+        openDevTools: shouldOpenDevTools(environment),
+      }),
+    )
 
     // Install DevTools extension if needed.
     // .init(chromeDevToolsExtension({ extension: "VUEJS3_DEVTOOLS" }))
