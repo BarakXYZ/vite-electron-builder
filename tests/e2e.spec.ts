@@ -16,7 +16,7 @@ type MainWindowState = {
 
 type WorkerFixtures = {
   electronApp: ElectronApplication;
-  themeSource: "dark" | "light";
+  themeSource: "dark" | "light" | "system";
 };
 
 async function getMainWindowState(
@@ -76,14 +76,23 @@ const test = base.extend<TestFixtures, WorkerFixtures>({
   page: async ({ electronApp, themeSource }, use) => {
     const page = await electronApp.firstWindow();
 
-    await page.emulateMedia({ colorScheme: themeSource });
+    await page.emulateMedia({
+      colorScheme: themeSource === "system" ? null : themeSource,
+    });
     await page.waitForLoadState("load");
     await use(page);
   },
 
   themeSource: [
     async ({}, use, workerInfo) => {
-      await use(workerInfo.project.use.colorScheme === "dark" ? "dark" : "light");
+      const colorScheme = workerInfo.project.use.colorScheme;
+
+      if (colorScheme === "dark" || colorScheme === "light") {
+        await use(colorScheme);
+        return;
+      }
+
+      await use("system");
     },
     { scope: "worker" },
   ],
@@ -105,14 +114,21 @@ test.describe("Main window web content", () => {
       return {
         documentClassName: document.documentElement.className,
         mediaPrefersDark: window.matchMedia("(prefers-color-scheme: dark)").matches,
+        mediaPrefersLight: window.matchMedia("(prefers-color-scheme: light)").matches,
         state,
       };
     });
 
     expect(themeState.state.themeSource).toEqual(themeSource);
+    expect(themeState.documentClassName).toContain(themeState.state.resolvedTheme);
+    expect(themeState.mediaPrefersDark).toEqual(themeState.state.resolvedTheme === "dark");
+    expect(themeState.mediaPrefersLight).toEqual(themeState.state.resolvedTheme === "light");
+
+    if (themeSource === "system") {
+      return;
+    }
+
     expect(themeState.state.resolvedTheme).toEqual(themeSource);
-    expect(themeState.documentClassName).toContain(themeSource);
-    expect(themeState.mediaPrefersDark).toEqual(themeSource === "dark");
   });
 
   test("The main window has an interactive button", async ({ page }) => {

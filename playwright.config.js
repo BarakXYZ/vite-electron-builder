@@ -17,6 +17,12 @@ export default defineConfig({
         colorScheme: "dark",
       },
     },
+    {
+      name: "electron-system",
+      use: {
+        colorScheme: null,
+      },
+    },
   ],
   testDir: "./tests",
   testMatch: "e2e.spec.ts",
