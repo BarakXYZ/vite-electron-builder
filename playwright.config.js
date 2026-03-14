@@ -4,6 +4,20 @@ import process from "node:process";
 export default defineConfig({
   forbidOnly: Boolean(process.env.CI),
   fullyParallel: false,
+  projects: [
+    {
+      name: "electron-light",
+      use: {
+        colorScheme: "light",
+      },
+    },
+    {
+      name: "electron-dark",
+      use: {
+        colorScheme: "dark",
+      },
+    },
+  ],
   testDir: "./tests",
   testMatch: "e2e.spec.ts",
   workers: 1,

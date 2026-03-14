@@ -16,6 +16,7 @@ type MainWindowState = {
 
 type WorkerFixtures = {
   electronApp: ElectronApplication;
+  themeSource: "dark" | "light";
 };
 
 async function getMainWindowState(
@@ -44,7 +45,7 @@ async function getMainWindowState(
 
 const test = base.extend<TestFixtures, WorkerFixtures>({
   electronApp: [
-    async ({}, use, workerInfo) => {
+    async ({ themeSource }, use, workerInfo) => {
       const profile = await createElectronAppProfile(workerInfo.parallelIndex);
       const electronApp = await electron.launch({
         args: ["."],
@@ -52,6 +53,7 @@ const test = base.extend<TestFixtures, WorkerFixtures>({
           ...process.env,
           APP_LOGS_PATH: profile.logsPath,
           APP_SESSION_DATA_PATH: profile.sessionDataPath,
+          APP_THEME_SOURCE: themeSource,
           APP_USER_DATA_PATH: profile.rootPath,
           PLAYWRIGHT_TEST: "true",
         },
@@ -71,12 +73,20 @@ const test = base.extend<TestFixtures, WorkerFixtures>({
     await use(await electronApp.evaluate(() => process.versions));
   },
 
-  page: async ({ electronApp }, use) => {
+  page: async ({ electronApp, themeSource }, use) => {
     const page = await electronApp.firstWindow();
 
+    await page.emulateMedia({ colorScheme: themeSource });
     await page.waitForLoadState("load");
     await use(page);
   },
+
+  themeSource: [
+    async ({}, use, workerInfo) => {
+      await use(workerInfo.project.use.colorScheme === "dark" ? "dark" : "light");
+    },
+    { scope: "worker" },
+  ],
 });
 
 test("Main window state", async ({ electronApp, page }) => {
@@ -88,6 +98,23 @@ test("Main window state", async ({ electronApp, page }) => {
 });
 
 test.describe("Main window web content", () => {
+  test("The main window resolves the configured theme project", async ({ page, themeSource }) => {
+    const themeState = await page.evaluate(async () => {
+      const state = await window.electronAPI.theme.getState();
+
+      return {
+        documentClassName: document.documentElement.className,
+        mediaPrefersDark: window.matchMedia("(prefers-color-scheme: dark)").matches,
+        state,
+      };
+    });
+
+    expect(themeState.state.themeSource).toEqual(themeSource);
+    expect(themeState.state.resolvedTheme).toEqual(themeSource);
+    expect(themeState.documentClassName).toContain(themeSource);
+    expect(themeState.mediaPrefersDark).toEqual(themeSource === "dark");
+  });
+
   test("The main window has an interactive button", async ({ page }) => {
     const element = page.getByRole("button", { name: /count is \d+/ });
     await expect(element).toBeVisible();
@@ -105,6 +132,11 @@ test.describe("Main window web content", () => {
 test.describe("Preload context should be exposed", () => {
   test("with a single explicit bridge object", async ({ page }) => {
     const type = await page.evaluate(() => typeof window.electronAPI);
+    expect(type).toEqual("object");
+  });
+
+  test("with a theme bridge", async ({ page }) => {
+    const type = await page.evaluate(() => typeof window.electronAPI.theme);
     expect(type).toEqual("object");
   });
 
